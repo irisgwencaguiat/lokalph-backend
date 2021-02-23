@@ -12,9 +12,7 @@ const profileModel = {
         introduction,
       })
       .returning(["id"])
-      .then((result) => {
-        return result[0];
-      });
+      .then((result) => result[0]);
   },
 };
 
