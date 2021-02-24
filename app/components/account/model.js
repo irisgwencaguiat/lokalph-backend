@@ -1,4 +1,4 @@
-const knex = require("../../database/knex");
+const knex = require("../../../database/knex");
 const profileModel = require("../profile/model");
 
 const accountModel = {
