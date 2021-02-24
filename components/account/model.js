@@ -34,6 +34,15 @@ const accountModel = {
         return account;
       });
   },
+  getAccountDetailsByEmail: async (email) => {
+    return await knex
+      .select()
+      .from(accountModel.tableName)
+      .where("email", email)
+      .then((result) => {
+        return result[0];
+      });
+  },
 };
 
 module.exports = accountModel;
