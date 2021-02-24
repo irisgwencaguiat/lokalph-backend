@@ -29,7 +29,7 @@ const options = {
       directory: __dirname + "/database/migrations",
     },
     seeds: {
-      directory: __dirname + "/database/production/seeds",
+      directory: __dirname + "/database/seeds",
     },
   },
 };
