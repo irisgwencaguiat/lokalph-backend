@@ -10,7 +10,6 @@ const application = express();
 application.use(cors());
 application.use(bodyParser.urlencoded({ extended: false }));
 application.use(bodyParser.json());
-application.use(passport.initialize());
 application.use("/api", api);
 application.use(passport.initialize());
 jwtPassport(passport);
