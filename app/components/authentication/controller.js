@@ -15,6 +15,12 @@ const authenticationController = {
         email,
         password,
       } = request.body;
+
+      if (!first_name) throw "First name field is empty.";
+      if (!last_name) throw "Last name field is empty.";
+      if (!birth_date) throw "Birth date field is empty.";
+      if (!email) throw "Email field is empty.";
+      if (!password) throw "Password field is empty.";
       if (validator.isEmpty(first_name)) throw "First name field is empty.";
       if (validator.isEmpty(last_name)) throw "Last name field is empty.";
       if (validator.isEmpty(birth_date)) throw "Birth date field is empty.";
@@ -23,6 +29,7 @@ const authenticationController = {
       if (!validator.isEmail(email)) throw "Email is not valid.";
       const doesEmailExist = await accountModel.getAccountDetailsByEmail(email);
       if (doesEmailExist) throw `${email} is already exists.`;
+
       const profileRegisterResult = await profileModel.register({
         first_name,
         last_name,
