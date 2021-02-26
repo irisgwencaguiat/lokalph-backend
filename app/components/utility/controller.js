@@ -14,6 +14,9 @@ const utilityController = {
     const salt = bcrypt.genSaltSync(parseInt(process.env.BCRYPT_SALT_ROUNDS));
     return bcrypt.hashSync(password, salt);
   },
+  validateHashPassword(plainTextPassword, hashedPassword) {
+    return bcrypt.compareSync(plainTextPassword, hashedPassword);
+  },
 };
 
 module.exports = utilityController;

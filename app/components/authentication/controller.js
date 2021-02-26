@@ -28,7 +28,7 @@ const authenticationController = {
       if (validator.isEmpty(password)) throw "Password field is empty.";
       if (!validator.isEmail(email)) throw "Email is not valid.";
       const doesEmailExist = await accountModel.getAccountDetailsByEmail(email);
-      if (doesEmailExist) throw `${email} is already exists.`;
+      if (doesEmailExist) throw `${email} already exists.`;
 
       const profileRegisterResult = await profileModel.register({
         first_name,
@@ -53,6 +53,57 @@ const authenticationController = {
           success: true,
           code: 200,
           message: "Record has been created successfully.",
+          data: {
+            user: details,
+            token,
+          },
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
+  logIn: async (request, response) => {
+    try {
+      const { email, password } = request.body;
+      if (!email) throw "Email field is empty.";
+      if (!password) throw "Password field is empty.";
+      if (validator.isEmpty(email)) throw "Email field is empty.";
+      if (validator.isEmpty(password)) throw "Password field is empty.";
+
+      const gotAccountDetails = await accountModel.getAccountDetailsByEmail(
+        email
+      );
+      const emailDoesNotExist = !gotAccountDetails;
+
+      if (emailDoesNotExist) throw `${email} does not exists.`;
+
+      const isPlainTextValidated = utilityController.validateHashPassword(
+        password,
+        gotAccountDetails.password
+      );
+      if (!isPlainTextValidated) throw "Incorrect Password";
+
+      delete gotAccountDetails.password;
+
+      const details = await accountModel.getAccountDetails(
+        gotAccountDetails.id
+      );
+      const token = jsonwebtoken.sign(
+        details,
+        process.env.AUTHENTICATION_SECRET_OR_KEY
+      );
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Log in successfully.",
           data: {
             user: details,
             token,
