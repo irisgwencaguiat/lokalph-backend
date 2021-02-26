@@ -120,6 +120,36 @@ const authenticationController = {
       );
     }
   },
+  validateUser: async (request, response) => {
+    try {
+      const accountID = request.user.id;
+      const details = await accountModel.getAccountDetails(accountID);
+      delete details.password;
+      const token = jsonwebtoken.sign(
+        details,
+        process.env.AUTHENTICATION_SECRET_OR_KEY
+      );
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "User validated.",
+          data: {
+            user: details,
+            token,
+          },
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = authenticationController;
