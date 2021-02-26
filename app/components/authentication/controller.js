@@ -123,6 +123,7 @@ const authenticationController = {
   validateUser: async (request, response) => {
     try {
       const accountID = request.user.id;
+      if (!accountID) throw "You are not authorized to access this route.";
       const details = await accountModel.getAccountDetails(accountID);
       delete details.password;
       const token = jsonwebtoken.sign(
@@ -141,10 +142,10 @@ const authenticationController = {
         })
       );
     } catch (error) {
-      response.status(400).json(
+      response.status(401).json(
         httpResource({
           success: false,
-          code: 400,
+          code: 401,
           message: error,
         })
       );
