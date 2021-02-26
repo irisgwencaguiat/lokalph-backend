@@ -36,7 +36,7 @@ const accountModel = {
   },
   getAccountDetailsByEmail: async (email) => {
     return await knex
-      .select()
+      .select("account.id", "account.password")
       .from(accountModel.tableName)
       .where("email", email)
       .then((result) => {
