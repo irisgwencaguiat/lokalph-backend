@@ -1,7 +1,6 @@
 const express = require("express");
 const api = express();
 const authenticationRouter = require("./components/authentication/router");
-const passport = require("passport");
 const middleware = require("./middleware");
 
 api.use("/authentication", authenticationRouter);
@@ -9,11 +8,11 @@ api.use("/authentication", authenticationRouter);
 api.post(
   "/test",
   [
-    passport.authenticate("jwt", { session: false }),
-    middleware.authentication.grantAccess(["admin"]),
+    middleware.authentication.passportAuthenticate,
+    middleware.authentication.grantAccess(["customer", "seller", "admin"]),
   ],
   (request, response) => {
-    console.log(request.body);
+    response.status(200).json(request.body);
   }
 );
 
