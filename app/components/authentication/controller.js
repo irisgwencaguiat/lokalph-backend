@@ -55,7 +55,7 @@ const authenticationController = {
           message: "Record has been created successfully.",
           data: {
             user: details,
-            token,
+            access_token: token,
           },
         })
       );
@@ -106,7 +106,7 @@ const authenticationController = {
           message: "Log in successfully.",
           data: {
             user: details,
-            token,
+            access_token: token,
           },
         })
       );
@@ -137,7 +137,7 @@ const authenticationController = {
           message: "User validated.",
           data: {
             user: details,
-            token,
+            access_token: token,
           },
         })
       );
