@@ -43,6 +43,11 @@ const accountModel = {
         return result[0];
       });
   },
+  updateAccountType: async (id) => {
+    return knex(accountModel.tableName).where("id", id).update({
+      account_type_id: 2,
+    });
+  },
 };
 
 module.exports = accountModel;
