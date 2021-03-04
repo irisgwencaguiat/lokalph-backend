@@ -10,9 +10,10 @@ const accountController = {
       if (!gotAccountDetails) throw "Email not exists.";
       response.status(200).json(
         httpResource({
-          success: false,
+          success: true,
           code: 200,
-          message: gotAccountDetails,
+          message: "Successfully fetched records.",
+          data: gotAccountDetails,
         })
       );
     } catch (error) {
