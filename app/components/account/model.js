@@ -31,12 +31,13 @@ const accountModel = {
           const account_type = await knex("account_type")
             .where("account_type.id", account.account_type_id)
             .then((result2) => result2[0]);
-          const stripe = await knex("stripe")
-            .where("stripe.id", account.stripe_id)
-            .then((result2) => result2[0]);
+          const stripe =
+            (await knex("stripe")
+              .where("stripe.id", account.stripe_id)
+              .then((result2) => result2[0])) || null;
           account.profile = Object.assign({}, profile);
           account.account_type = Object.assign({}, account_type);
-          account.stripe = Object.assign({}, stripe);
+          account.stripe = stripe ? Object.assign({}, stripe) : null;
           delete account.password;
           return account;
         })) || null
@@ -56,8 +57,13 @@ const accountModel = {
           const account_type = await knex("account_type")
             .where("account_type.id", account.account_type_id)
             .then((result2) => result2[0]);
+          const stripe =
+            (await knex("stripe")
+              .where("stripe.id", account.stripe_id)
+              .then((result2) => result2[0])) || null;
           account.profile = Object.assign({}, profile);
           account.account_type = Object.assign({}, account_type);
+          account.stripe = stripe ? Object.assign({}, stripe) : null;
           delete account.password;
           return account;
         })) || null
@@ -71,16 +77,16 @@ const accountModel = {
       .then((result) => result[0].password || null);
   },
 
-  async updateAccountType(id, type_id) {
+  async updateAccountType(id, accountTypeId) {
     return knex(accountModel.tableName).where("id", id).update({
-      account_type_id: type_id,
+      account_type_id: accountTypeId,
     });
   },
 
-  async updateAccountStripeId(account_id, stripe_id) {
+  async updateStripeId(accountId, stripeId) {
     return knex(accountModel.tableName)
-      .where("id", account_id)
-      .update({ stripe_id });
+      .where("id", accountId)
+      .update({ stripe_id: stripeId });
   },
 };
 
