@@ -36,6 +36,7 @@ const shopModel = {
         shop.address = Object.assign({}, address);
         delete shop.account_id;
         delete shop.address_id;
+        delete shop.account.stripe_id;
         delete shop.account.profile_id;
         delete shop.account.account_type_id;
         delete shop.account.address_id;

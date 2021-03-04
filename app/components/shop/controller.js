@@ -1,5 +1,6 @@
 const accountModel = require("../account/model");
 const addressModel = require("../address/model");
+const stripeModel = require("../stripe/model");
 const shopModel = require("../shop/model");
 const httpResource = require("../../http_resource");
 const validator = require("validator");
@@ -8,10 +9,24 @@ const shopController = {
   async createShop(request, response) {
     try {
       const account_id = request.user.id;
-      const { name, introduction, address, contact_number } = request.body;
+      const {
+        name,
+        introduction,
+        address,
+        contact_number,
+        stripe,
+      } = request.body;
+
       if (!name) throw "Name field is empty.";
       if (!contact_number) throw "Contact number field is empty.";
+      if (!address) throw "Address field is empty.";
       for (let [key, value] of Object.entries(address)) {
+        if (!value) {
+          throw `${key} field is null empty`;
+        }
+      }
+      if (!stripe) throw "Sripe field is empty.";
+      for (let [key, value] of Object.entries(stripe)) {
         if (!value) {
           throw `${key} field is null empty`;
         }
@@ -20,6 +35,11 @@ const shopController = {
       if (validator.isEmpty(contact_number))
         throw "Contact number field is empty.";
       for (let [key, value] of Object.entries(address)) {
+        if (validator.isEmpty(value)) {
+          throw `${key} field is empty.`;
+        }
+      }
+      for (let [key, value] of Object.entries(stripe)) {
         if (validator.isEmpty(value)) {
           throw `${key} field is empty.`;
         }
@@ -37,7 +57,19 @@ const shopController = {
       }
       const doesShopNameExist = await shopModel.getShopDetailsByName(name);
       if (doesShopNameExist) throw `${name} is already taken`;
+
       const createdAddressDetails = await addressModel.createAddress(address);
+
+      const doesAccountStripeExist = await accountModel.getDetails(account_id);
+      console.log(doesAccountStripeExist);
+      if (doesAccountStripeExist.stripe_id) throw "Stripe field already exist.";
+      const createdStripeDetails = await stripeModel.createStripe(stripe);
+
+      await accountModel.updateAccountStripeId(
+        account_id,
+        createdStripeDetails.id
+      );
+      await accountModel.updateAccountType(account_id, 2);
       const createdShopDetails = await shopModel.createShop({
         name,
         introduction,
@@ -45,11 +77,11 @@ const shopController = {
         contact_number,
         account_id,
       });
-      const sellerAccountId = 2;
-      await accountModel.updateAccountType(account_id, sellerAccountId);
+
       const fullShopDetails = await shopModel.getShopDetails(
         createdShopDetails.id
       );
+
       response.status(200).json(
         httpResource({
           success: true,

@@ -31,8 +31,12 @@ const accountModel = {
           const account_type = await knex("account_type")
             .where("account_type.id", account.account_type_id)
             .then((result2) => result2[0]);
+          const stripe = await knex("stripe")
+            .where("stripe.id", account.stripe_id)
+            .then((result2) => result2[0]);
           account.profile = Object.assign({}, profile);
           account.account_type = Object.assign({}, account_type);
+          account.stripe = Object.assign({}, stripe);
           delete account.password;
           return account;
         })) || null
@@ -71,6 +75,12 @@ const accountModel = {
     return knex(accountModel.tableName).where("id", id).update({
       account_type_id: type_id,
     });
+  },
+
+  async updateAccountStripeId(account_id, stripe_id) {
+    return knex(accountModel.tableName)
+      .where("id", account_id)
+      .update({ stripe_id });
   },
 };
 
