@@ -4,7 +4,7 @@ const profileModel = require("../profile/model");
 const accountModel = {
   tableName: "account",
 
-  register: async ({ email, password, profile_id, account_type_id }) => {
+  async register({ email, password, profile_id, account_type_id }) {
     return await knex(accountModel.tableName)
       .insert({
         email,
@@ -17,7 +17,8 @@ const accountModel = {
         return result[0];
       });
   },
-  getDetails: async (id) => {
+
+  async getDetails(id) {
     return (
       (await knex(`${accountModel.tableName} as account`)
         .where("account.id", id)
@@ -37,7 +38,8 @@ const accountModel = {
         })) || null
     );
   },
-  getDetailsByEmail: async (email) => {
+
+  async getDetailsByEmail(email) {
     return (
       (await knex(`${accountModel.tableName} as account`)
         .where("account.email", email)
@@ -57,15 +59,17 @@ const accountModel = {
         })) || null
     );
   },
+
   async getPassword(id) {
     return await knex(`${accountModel.tableName} as account`)
       .select(["password"])
       .where("account.id", id)
       .then((result) => result[0].password || null);
   },
-  updateAccountType: async (id) => {
+
+  async updateAccountType(id, type_id) {
     return knex(accountModel.tableName).where("id", id).update({
-      account_type_id: 2,
+      account_type_id: type_id,
     });
   },
 };

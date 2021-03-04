@@ -65,6 +65,7 @@ const authenticationController = {
       );
     }
   },
+
   logIn: async (request, response) => {
     try {
       const { email, password } = request.body;
@@ -110,6 +111,7 @@ const authenticationController = {
       );
     }
   },
+
   validateUser: async (request, response) => {
     try {
       const accountID = request.user.id;
