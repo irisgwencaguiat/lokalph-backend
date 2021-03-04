@@ -40,9 +40,6 @@ const shopController = {
       const createdAddressDetails = await addressModel.createAddress(address);
       const gotAccountDetails = await accountModel.getDetails(accountId);
       if (!gotAccountDetails.stripe) {
-        console.log(gotAccountDetails.stripe);
-        console.log(publishable_key);
-        console.log(secret_key);
         if (!publishable_key) throw "Stripe publishable key is empty.";
         if (!secret_key) throw "Stripe secret key is empty.";
         const createdStripeDetails = await stripeModel.createStripe({
@@ -70,7 +67,6 @@ const shopController = {
         })
       );
     } catch (error) {
-      console.log(error);
       response.status(400).json(
         httpResource({
           success: false,
