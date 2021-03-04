@@ -23,7 +23,7 @@ const shopModel = {
       .where("id", id)
       .then(async (result) => {
         const shop = result[0];
-        const account = await accountModel.getAccountDetails(shop.account_id);
+        const account = await accountModel.getDetails(shop.account_id);
         const address = await knex("address")
           .where("id", shop.address_id)
           .then(async (result) => {

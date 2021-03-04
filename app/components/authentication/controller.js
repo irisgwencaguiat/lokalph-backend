@@ -15,7 +15,6 @@ const authenticationController = {
         email,
         password,
       } = request.body;
-
       if (!first_name) throw "First name field is empty.";
       if (!last_name) throw "Last name field is empty.";
       if (!birth_date) throw "Birth date field is empty.";
@@ -27,9 +26,8 @@ const authenticationController = {
       if (validator.isEmpty(email)) throw "Email field is empty.";
       if (validator.isEmpty(password)) throw "Password field is empty.";
       if (!validator.isEmail(email)) throw "Email is not valid.";
-      const doesEmailExist = await accountModel.getAccountDetailsByEmail(email);
+      const doesEmailExist = await accountModel.getDetailsByEmail(email);
       if (doesEmailExist) throw `${email} already exists.`;
-
       const profileRegisterResult = await profileModel.register({
         first_name,
         last_name,
@@ -41,9 +39,7 @@ const authenticationController = {
         profile_id: profileRegisterResult.id,
         account_type_id: 1,
       });
-      const details = await accountModel.getAccountDetails(
-        accountRegisterResult.id
-      );
+      const details = await accountModel.getDetails(accountRegisterResult.id);
       const token = jsonwebtoken.sign(
         details,
         process.env.AUTHENTICATION_SECRET_OR_KEY
@@ -77,24 +73,18 @@ const authenticationController = {
       if (validator.isEmpty(email)) throw "Email field is empty.";
       if (validator.isEmpty(password)) throw "Password field is empty.";
 
-      const gotAccountDetails = await accountModel.getAccountDetailsByEmail(
-        email
-      );
-      const emailDoesNotExist = !gotAccountDetails;
-
-      if (emailDoesNotExist) throw `${email} does not exists.`;
-
-      const isPlainTextValidated = utilityController.validateHashPassword(
-        password,
-        gotAccountDetails.password
-      );
-      if (!isPlainTextValidated) throw "Incorrect Password";
-
-      delete gotAccountDetails.password;
-
-      const details = await accountModel.getAccountDetails(
+      const gotAccountDetails = await accountModel.getDetailsByEmail(email);
+      if (!gotAccountDetails) throw `${email} does not exists.`;
+      const accountPassword = await accountModel.getPassword(
         gotAccountDetails.id
       );
+      const isPlainTextValidated = utilityController.validateHashPassword(
+        password,
+        accountPassword
+      );
+      if (!isPlainTextValidated) throw "Incorrect Password";
+      delete gotAccountDetails.password;
+      const details = await accountModel.getDetails(gotAccountDetails.id);
       const token = jsonwebtoken.sign(
         details,
         process.env.AUTHENTICATION_SECRET_OR_KEY
@@ -124,7 +114,7 @@ const authenticationController = {
     try {
       const accountID = request.user.id;
       if (!accountID) throw "You are not authorized to access this route.";
-      const details = await accountModel.getAccountDetails(accountID);
+      const details = await accountModel.getDetails(accountID);
       delete details.password;
       const token = jsonwebtoken.sign(
         details,

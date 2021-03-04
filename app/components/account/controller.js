@@ -6,9 +6,7 @@ const accountController = {
     try {
       const email = request.params.email || null;
       if (!email) throw "Email is empty.";
-      const gotAccountDetails = await accountModel.getAccountDetailsByEmail(
-        email
-      );
+      const gotAccountDetails = await accountModel.getDetailsByEmail(email);
       if (!gotAccountDetails) throw "Email not exists.";
       response.status(200).json(
         httpResource({

@@ -17,7 +17,7 @@ const accountModel = {
         return result[0];
       });
   },
-  getAccountDetails: async (id) => {
+  getDetails: async (id) => {
     return (
       (await knex(`${accountModel.tableName} as account`)
         .where("account.id", id)
@@ -37,7 +37,7 @@ const accountModel = {
         })) || null
     );
   },
-  getAccountDetailsByEmail: async (email) => {
+  getDetailsByEmail: async (email) => {
     return (
       (await knex(`${accountModel.tableName} as account`)
         .where("account.email", email)
@@ -56,6 +56,12 @@ const accountModel = {
           return account;
         })) || null
     );
+  },
+  async getPassword(id) {
+    return await knex(`${accountModel.tableName} as account`)
+      .select(["password"])
+      .where("account.id", id)
+      .then((result) => result[0].password || null);
   },
   updateAccountType: async (id) => {
     return knex(accountModel.tableName).where("id", id).update({
