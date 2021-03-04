@@ -6,7 +6,7 @@ const httpResource = require("../../http_resource");
 const validator = require("validator");
 
 const shopController = {
-  createShop: async (request, response) => {
+  async createShop(request, response) {
     try {
       const account_id = request.user.id;
       const {
@@ -16,7 +16,7 @@ const shopController = {
         contact_number,
         stripe,
       } = request.body;
-      console.log(stripe);
+
       if (!name) throw "Name field is empty.";
       if (!contact_number) throw "Contact number field is empty.";
       if (!address) throw "Address field is empty.";
@@ -59,8 +59,17 @@ const shopController = {
       if (doesShopNameExist) throw `${name} is already taken`;
 
       const createdAddressDetails = await addressModel.createAddress(address);
+
+      const doesAccountStripeExist = await accountModel.getDetails(account_id);
+      console.log(doesAccountStripeExist);
+      if (doesAccountStripeExist.stripe_id) throw "Stripe field already exist.";
       const createdStripeDetails = await stripeModel.createStripe(stripe);
 
+      await accountModel.updateAccountStripeId(
+        account_id,
+        createdStripeDetails.id
+      );
+      await accountModel.updateAccountType(account_id, 2);
       const createdShopDetails = await shopModel.createShop({
         name,
         introduction,
@@ -69,11 +78,10 @@ const shopController = {
         account_id,
       });
 
-      await accountModel.updateAccountType(account_id);
-
       const fullShopDetails = await shopModel.getShopDetails(
         createdShopDetails.id
       );
+
       response.status(200).json(
         httpResource({
           success: true,

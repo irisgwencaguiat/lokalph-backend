@@ -2,7 +2,8 @@ const knex = require("../../../database/knex");
 
 const addressModel = {
   tableName: "address",
-  createAddress: async (address) => {
+
+  async createAddress(address) {
     return await knex(addressModel.tableName)
       .insert({ ...address })
       .returning(["id"])

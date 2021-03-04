@@ -2,7 +2,7 @@ const knex = require("../../../database/knex");
 
 const stripeModel = {
   tableName: "stripe",
-  createStripe: async (stripe) => {
+  async createStripe(stripe) {
     return await knex(stripeModel.tableName)
       .insert({ ...stripe })
       .returning(["id"])

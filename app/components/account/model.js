@@ -4,7 +4,7 @@ const profileModel = require("../profile/model");
 const accountModel = {
   tableName: "account",
 
-  register: async ({ email, password, profile_id, account_type_id }) => {
+  async register({ email, password, profile_id, account_type_id }) {
     return await knex(accountModel.tableName)
       .insert({
         email,
@@ -17,36 +17,70 @@ const accountModel = {
         return result[0];
       });
   },
-  getAccountDetails: async (id) => {
+
+  async getDetails(id) {
+    return (
+      (await knex(`${accountModel.tableName} as account`)
+        .where("account.id", id)
+        .then(async (result) => {
+          if (!result[0]) return null;
+          const account = result[0];
+          const profile = await knex("profile")
+            .where("profile.id", account.profile_id)
+            .then((result2) => result2[0]);
+          const account_type = await knex("account_type")
+            .where("account_type.id", account.account_type_id)
+            .then((result2) => result2[0]);
+          const stripe = await knex("stripe")
+            .where("stripe.id", account.stripe_id)
+            .then((result2) => result2[0]);
+          account.profile = Object.assign({}, profile);
+          account.account_type = Object.assign({}, account_type);
+          account.stripe = Object.assign({}, stripe);
+          delete account.password;
+          return account;
+        })) || null
+    );
+  },
+
+  async getDetailsByEmail(email) {
+    return (
+      (await knex(`${accountModel.tableName} as account`)
+        .where("account.email", email)
+        .then(async (result) => {
+          if (!result[0]) return null;
+          const account = result[0];
+          const profile = await knex("profile")
+            .where("profile.id", account.profile_id)
+            .then((result2) => result2[0]);
+          const account_type = await knex("account_type")
+            .where("account_type.id", account.account_type_id)
+            .then((result2) => result2[0]);
+          account.profile = Object.assign({}, profile);
+          account.account_type = Object.assign({}, account_type);
+          delete account.password;
+          return account;
+        })) || null
+    );
+  },
+
+  async getPassword(id) {
     return await knex(`${accountModel.tableName} as account`)
+      .select(["password"])
       .where("account.id", id)
-      .then(async (result) => {
-        const account = result[0];
-        const profile = await knex("profile")
-          .where("profile.id", account.profile_id)
-          .then((result2) => result2[0]);
-        const account_type = await knex("account_type")
-          .where("account_type.id", account.account_type_id)
-          .then((result2) => result2[0]);
-        account.profile = Object.assign({}, profile);
-        account.account_type = Object.assign({}, account_type);
-        delete account.password;
-        return account;
-      });
+      .then((result) => result[0].password || null);
   },
-  getAccountDetailsByEmail: async (email) => {
-    return await knex
-      .select("account.id", "account.password")
-      .from(accountModel.tableName)
-      .where("email", email)
-      .then((result) => {
-        return result[0];
-      });
-  },
-  updateAccountType: async (id) => {
+
+  async updateAccountType(id, type_id) {
     return knex(accountModel.tableName).where("id", id).update({
-      account_type_id: 2,
+      account_type_id: type_id,
     });
+  },
+
+  async updateAccountStripeId(account_id, stripe_id) {
+    return knex(accountModel.tableName)
+      .where("id", account_id)
+      .update({ stripe_id });
   },
 };
 
