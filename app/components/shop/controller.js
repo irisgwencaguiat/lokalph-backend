@@ -1,5 +1,6 @@
 const accountModel = require("../account/model");
 const addressModel = require("../address/model");
+const stripeModel = require("../stripe/model");
 const shopModel = require("../shop/model");
 const httpResource = require("../../http_resource");
 const validator = require("validator");
@@ -8,11 +9,24 @@ const shopController = {
   createShop: async (request, response) => {
     try {
       const account_id = request.user.id;
-      const { name, introduction, address, contact_number } = request.body;
-
+      const {
+        name,
+        introduction,
+        address,
+        contact_number,
+        stripe,
+      } = request.body;
+      console.log(stripe);
       if (!name) throw "Name field is empty.";
       if (!contact_number) throw "Contact number field is empty.";
+      if (!address) throw "Address field is empty.";
       for (let [key, value] of Object.entries(address)) {
+        if (!value) {
+          throw `${key} field is null empty`;
+        }
+      }
+      if (!stripe) throw "Sripe field is empty.";
+      for (let [key, value] of Object.entries(stripe)) {
         if (!value) {
           throw `${key} field is null empty`;
         }
@@ -21,6 +35,11 @@ const shopController = {
       if (validator.isEmpty(contact_number))
         throw "Contact number field is empty.";
       for (let [key, value] of Object.entries(address)) {
+        if (validator.isEmpty(value)) {
+          throw `${key} field is empty.`;
+        }
+      }
+      for (let [key, value] of Object.entries(stripe)) {
         if (validator.isEmpty(value)) {
           throw `${key} field is empty.`;
         }
@@ -40,6 +59,8 @@ const shopController = {
       if (doesShopNameExist) throw `${name} is already taken`;
 
       const createdAddressDetails = await addressModel.createAddress(address);
+      const createdStripeDetails = await stripeModel.createStripe(stripe);
+
       const createdShopDetails = await shopModel.createShop({
         name,
         introduction,
