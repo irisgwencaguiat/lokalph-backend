@@ -8,42 +8,22 @@ const validator = require("validator");
 const shopController = {
   async createShop(request, response) {
     try {
-      const account_id = request.user.id;
+      const accountId = request.user.id;
       const {
         name,
         introduction,
         address,
         contact_number,
-        stripe,
+        publishable_key,
+        secret_key,
       } = request.body;
 
       if (!name) throw "Name field is empty.";
       if (!contact_number) throw "Contact number field is empty.";
       if (!address) throw "Address field is empty.";
-      for (let [key, value] of Object.entries(address)) {
-        if (!value) {
-          throw `${key} field is null empty`;
-        }
-      }
-      if (!stripe) throw "Sripe field is empty.";
-      for (let [key, value] of Object.entries(stripe)) {
-        if (!value) {
-          throw `${key} field is null empty`;
-        }
-      }
       if (validator.isEmpty(name)) throw "Name field is empty.";
       if (validator.isEmpty(contact_number))
         throw "Contact number field is empty.";
-      for (let [key, value] of Object.entries(address)) {
-        if (validator.isEmpty(value)) {
-          throw `${key} field is empty.`;
-        }
-      }
-      for (let [key, value] of Object.entries(stripe)) {
-        if (validator.isEmpty(value)) {
-          throw `${key} field is empty.`;
-        }
-      }
       if (name.length > 35) throw "Shop name should not exceed 35 characters";
       if (contact_number.length < 10)
         throw "Contact number should not be less than 10 characters.";
@@ -55,39 +35,35 @@ const shopController = {
         if (introduction.length > 101)
           throw "Introduction should not exceed 101 characters";
       }
-      const doesShopNameExist = await shopModel.getShopDetailsByName(name);
-      if (doesShopNameExist) throw `${name} is already taken`;
-
+      const gotShopDetailsByName = await shopModel.getShopDetailsByName(name);
+      if (gotShopDetailsByName) throw `${name} is already taken`;
       const createdAddressDetails = await addressModel.createAddress(address);
-
-      const doesAccountStripeExist = await accountModel.getDetails(account_id);
-      console.log(doesAccountStripeExist);
-      if (doesAccountStripeExist.stripe_id) throw "Stripe field already exist.";
-      const createdStripeDetails = await stripeModel.createStripe(stripe);
-
-      await accountModel.updateAccountStripeId(
-        account_id,
-        createdStripeDetails.id
-      );
-      await accountModel.updateAccountType(account_id, 2);
-      const createdShopDetails = await shopModel.createShop({
+      const gotAccountDetails = await accountModel.getDetails(accountId);
+      if (!gotAccountDetails.stripe) {
+        if (!publishable_key) throw "Stripe publishable key is empty.";
+        if (!secret_key) throw "Stripe secret key is empty.";
+        const createdStripeDetails = await stripeModel.createStripe({
+          publishableKey: publishable_key,
+          secretKey: secret_key,
+        });
+        await accountModel.updateStripeId(accountId, createdStripeDetails.id);
+      }
+      if (gotAccountDetails.account_type.id === 1)
+        await accountModel.updateAccountType(accountId, 2);
+      const createdShop = await shopModel.createShop({
         name,
         introduction,
         address_id: createdAddressDetails.id,
         contact_number,
-        account_id,
+        account_id: accountId,
       });
-
-      const fullShopDetails = await shopModel.getShopDetails(
-        createdShopDetails.id
-      );
-
+      const gotShopDetails = await shopModel.getShopDetails(createdShop.id);
       response.status(200).json(
         httpResource({
           success: true,
           code: 200,
           message: "Record has been created successfully.",
-          data: fullShopDetails,
+          data: gotShopDetails,
         })
       );
     } catch (error) {
