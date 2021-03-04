@@ -5,11 +5,10 @@ const httpResource = require("../../http_resource");
 const validator = require("validator");
 
 const shopController = {
-  createShop: async (request, response) => {
+  async createShop(request, response) {
     try {
       const account_id = request.user.id;
       const { name, introduction, address, contact_number } = request.body;
-
       if (!name) throw "Name field is empty.";
       if (!contact_number) throw "Contact number field is empty.";
       for (let [key, value] of Object.entries(address)) {
@@ -38,7 +37,6 @@ const shopController = {
       }
       const doesShopNameExist = await shopModel.getShopDetailsByName(name);
       if (doesShopNameExist) throw `${name} is already taken`;
-
       const createdAddressDetails = await addressModel.createAddress(address);
       const createdShopDetails = await shopModel.createShop({
         name,
@@ -47,9 +45,8 @@ const shopController = {
         contact_number,
         account_id,
       });
-
-      await accountModel.updateAccountType(account_id);
-
+      const sellerAccountId = 2;
+      await accountModel.updateAccountType(account_id, sellerAccountId);
       const fullShopDetails = await shopModel.getShopDetails(
         createdShopDetails.id
       );

@@ -3,7 +3,8 @@ const accountModel = require("../account/model");
 
 const shopModel = {
   tableName: "shop",
-  createShop: async (input) => {
+
+  async createShop(input) {
     return await knex(shopModel.tableName)
       .insert({ ...input })
       .returning(["id", "address_id", "account_id"])
@@ -11,19 +12,21 @@ const shopModel = {
         return result[0];
       });
   },
-  getShopDetailsByName: async (name) => {
+
+  async getShopDetailsByName(name) {
     return await knex(shopModel.tableName)
       .where("name", name)
       .then((result) => {
         return result[0];
       });
   },
-  getShopDetails: async (id) => {
+
+  async getShopDetails(id) {
     return await knex(shopModel.tableName)
       .where("id", id)
       .then(async (result) => {
         const shop = result[0];
-        const account = await accountModel.getAccountDetails(shop.account_id);
+        const account = await accountModel.getDetails(shop.account_id);
         const address = await knex("address")
           .where("id", shop.address_id)
           .then(async (result) => {
