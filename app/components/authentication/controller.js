@@ -6,7 +6,7 @@ const jsonwebtoken = require("jsonwebtoken");
 const httpResource = require("../../http_resource");
 
 const authenticationController = {
-  register: async (request, response) => {
+  async register(request, response) {
     try {
       const {
         first_name,
@@ -66,7 +66,7 @@ const authenticationController = {
     }
   },
 
-  logIn: async (request, response) => {
+  async logIn(request, response) {
     try {
       const { email, password } = request.body;
       if (!email) throw "Email field is empty.";
@@ -112,7 +112,7 @@ const authenticationController = {
     }
   },
 
-  validateUser: async (request, response) => {
+  async validateUser(request, response) {
     try {
       const accountID = request.user.id;
       if (!accountID) throw "You are not authorized to access this route.";

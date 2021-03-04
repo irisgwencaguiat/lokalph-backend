@@ -3,7 +3,7 @@ const knex = require("../../../database/knex");
 const profileModel = {
   tableName: "profile",
 
-  register: async ({ first_name, last_name, birth_date, introduction }) => {
+  async register({ first_name, last_name, birth_date, introduction }) {
     return await knex(profileModel.tableName)
       .insert({
         first_name,

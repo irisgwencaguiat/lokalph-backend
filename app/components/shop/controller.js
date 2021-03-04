@@ -5,7 +5,7 @@ const httpResource = require("../../http_resource");
 const validator = require("validator");
 
 const shopController = {
-  createShop: async (request, response) => {
+  async createShop(request, response) {
     try {
       const account_id = request.user.id;
       const { name, introduction, address, contact_number } = request.body;
