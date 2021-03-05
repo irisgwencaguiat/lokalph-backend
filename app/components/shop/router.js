@@ -12,6 +12,6 @@ router.post(
   shopController.createShop
 );
 
-router.get("/:account_id", shopController.getShopsByAccountId);
+router.get("/account/:account_id", shopController.getAccountShops);
 
 module.exports = router;

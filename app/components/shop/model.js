@@ -45,7 +45,7 @@ const shopModel = {
       });
   },
 
-  async getShopsByAccountId({ accountId, page, perPage }) {
+  async getAccountShops({ accountId, page, perPage }) {
     return knex(shopModel.tableName)
       .where("account_id", accountId)
       .orderBy("created_at", "DESC")
