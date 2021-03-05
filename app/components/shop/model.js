@@ -40,8 +40,24 @@ const shopModel = {
         delete shop.account.profile_id;
         delete shop.account.account_type_id;
         delete shop.account.address_id;
-
+        delete shop.account.stripe;
         return shop;
+      });
+  },
+
+  async getShopsByAccountId({ accountId, page, perPage }) {
+    return knex(shopModel.tableName)
+      .where("account_id", accountId)
+      .orderBy("created_at", "DESC")
+      .paginate({
+        perPage: perPage,
+        currentPage: page,
+      })
+      .then(async (result) => {
+        const data = result.data;
+        return await Promise.all(
+          data.map(async (item) => await shopModel.getShopDetails(item.id))
+        );
       });
   },
 };
