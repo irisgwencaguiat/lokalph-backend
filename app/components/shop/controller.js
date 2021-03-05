@@ -77,7 +77,7 @@ const shopController = {
     }
   },
 
-  async getShopsByAccountId(request, response) {
+  async getAccountShops(request, response) {
     try {
       const accountId = parseInt(request.params.account_id);
       const page = parseInt(request.query.page) || 1;
@@ -87,7 +87,7 @@ const shopController = {
         page,
         perPage,
       };
-      const shops = await shopModel.getShopsByAccountId(payload);
+      const shops = await shopModel.getAccountShops(payload);
       response.status(200).json(
         httpResource({
           success: true,
