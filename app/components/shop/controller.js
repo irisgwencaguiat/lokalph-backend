@@ -76,6 +76,36 @@ const shopController = {
       );
     }
   },
+
+  async getShopsByAccountId(request, response) {
+    try {
+      const accountId = parseInt(request.params.account_id);
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const payload = {
+        accountId,
+        page,
+        perPage,
+      };
+      const shops = await shopModel.getShopsByAccountId(payload);
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully get records.",
+          data: shops,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = shopController;
