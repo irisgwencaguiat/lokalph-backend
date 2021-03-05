@@ -40,7 +40,7 @@ const shopModel = {
         delete shop.account.profile_id;
         delete shop.account.account_type_id;
         delete shop.account.address_id;
-
+        delete shop.account.stripe;
         return shop;
       });
   },
