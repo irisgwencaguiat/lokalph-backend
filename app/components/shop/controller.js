@@ -82,10 +82,12 @@ const shopController = {
       const accountId = parseInt(request.params.account_id);
       const page = parseInt(request.query.page) || 1;
       const perPage = parseInt(request.query.per_page) || 5;
+      const sort = request.query.sort || "asc";
       const payload = {
         accountId,
         page,
         perPage,
+        sort,
       };
       const shops = await shopModel.getAccountShops(payload);
       response.status(200).json(
