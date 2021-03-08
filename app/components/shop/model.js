@@ -60,6 +60,27 @@ const shopModel = {
         );
       });
   },
+
+  async searchAccountShops({ accountId, page, perPage, sort, search }) {
+    return await knex(shopModel.tableName)
+      .join("address", "shop.address_id", "=", "address.id")
+      .select(["shop.id as id"])
+      .where("shop.account_id", accountId)
+      .andWhere("shop.name", "ilike", `%${search}%`)
+      .orWhere("shop.contact_number", "ilike", `%${search}%`)
+      .orWhere("address.value", "ilike", `%${search}%`)
+      .orderBy("created_at", sort)
+      .paginate({
+        perPage: perPage,
+        currentPage: page,
+      })
+      .then(async (result) => {
+        const data = result.data;
+        return await Promise.all(
+          data.map(async (item) => await shopModel.getShopDetails(item.id))
+        );
+      });
+  },
 };
 
 module.exports = shopModel;
