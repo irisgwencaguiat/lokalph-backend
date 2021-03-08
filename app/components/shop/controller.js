@@ -82,17 +82,23 @@ const shopController = {
       const accountId = parseInt(request.params.account_id);
       const page = parseInt(request.query.page) || 1;
       const perPage = parseInt(request.query.per_page) || 5;
+      const sort = request.query.sort || "asc";
+      const search = request.query.search || null;
       const payload = {
         accountId,
         page,
         perPage,
+        sort,
+        search,
       };
-      const shops = await shopModel.getAccountShops(payload);
+      let shops = [];
+      if (search) shops = await shopModel.searchAccountShops(payload);
+      if (!search) shops = await shopModel.getAccountShops(payload);
       response.status(200).json(
         httpResource({
           success: true,
           code: 200,
-          message: "Successfully get records.",
+          message: "Successfully got records.",
           data: shops,
         })
       );
