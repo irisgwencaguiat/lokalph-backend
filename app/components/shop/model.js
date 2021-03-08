@@ -45,20 +45,58 @@ const shopModel = {
       });
   },
 
-  async getAccountShops({ accountId, page, perPage }) {
+  async getAccountShops({ accountId, page, perPage, sort }) {
     return knex(shopModel.tableName)
       .where("account_id", accountId)
-      .orderBy("created_at", "DESC")
+      .orderBy("created_at", sort)
       .paginate({
         perPage: perPage,
         currentPage: page,
       })
       .then(async (result) => {
         const data = result.data;
-        return await Promise.all(
+        const shops = await Promise.all(
           data.map(async (item) => await shopModel.getShopDetails(item.id))
         );
+        const totalCount = await shopModel.getAccountShopsTotalCount(accountId);
+        return {
+          shops,
+          total_count: totalCount,
+        };
       });
+  },
+
+  async searchAccountShops({ accountId, page, perPage, sort, search }) {
+    return await knex(shopModel.tableName)
+      .join("address", "shop.address_id", "=", "address.id")
+      .select(["shop.id as id"])
+      .where("shop.account_id", accountId)
+      .andWhere("shop.name", "ilike", `%${search}%`)
+      .orWhere("shop.contact_number", "ilike", `%${search}%`)
+      .orWhere("address.value", "ilike", `%${search}%`)
+      .orderBy("created_at", sort)
+      .paginate({
+        perPage: perPage,
+        currentPage: page,
+      })
+      .then(async (result) => {
+        const data = result.data;
+        const shops = await Promise.all(
+          data.map(async (item) => await shopModel.getShopDetails(item.id))
+        );
+        const totalCount = await shopModel.getAccountShopsTotalCount(accountId);
+        return {
+          shops,
+          total_count: totalCount,
+        };
+      });
+  },
+
+  async getAccountShopsTotalCount(accountId) {
+    return knex(shopModel.tableName)
+      .count("id")
+      .where("account_id", accountId)
+      .then((result) => parseInt(result[0].count) || null);
   },
 };
 
