@@ -14,8 +14,7 @@ const shopController = {
         introduction,
         address,
         contact_number,
-        publishable_key,
-        secret_key,
+        stripe,
       } = request.body;
 
       if (!name) throw "Name field is empty.";
@@ -40,11 +39,11 @@ const shopController = {
       const createdAddressDetails = await addressModel.createAddress(address);
       const gotAccountDetails = await accountModel.getDetails(accountId);
       if (!gotAccountDetails.stripe) {
-        if (!publishable_key) throw "Stripe publishable key is empty.";
-        if (!secret_key) throw "Stripe secret key is empty.";
+        if (!stripe.publishable_key) throw "Stripe publishable key is empty.";
+        if (!stripe.secret_key) throw "Stripe secret key is empty.";
         const createdStripeDetails = await stripeModel.createStripe({
-          publishableKey: publishable_key,
-          secretKey: secret_key,
+          publishableKey: stripe.publishable_key,
+          secretKey: stripe.secret_key,
         });
         await accountModel.updateStripeId(accountId, createdStripeDetails.id);
       }
