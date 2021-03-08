@@ -55,9 +55,14 @@ const shopModel = {
       })
       .then(async (result) => {
         const data = result.data;
-        return await Promise.all(
+        const shops = await Promise.all(
           data.map(async (item) => await shopModel.getShopDetails(item.id))
         );
+        const totalCount = await shopModel.getAccountShopsTotalCount(accountId);
+        return {
+          shops,
+          total_count: totalCount,
+        };
       });
   },
 
@@ -76,10 +81,22 @@ const shopModel = {
       })
       .then(async (result) => {
         const data = result.data;
-        return await Promise.all(
+        const shops = await Promise.all(
           data.map(async (item) => await shopModel.getShopDetails(item.id))
         );
+        const totalCount = await shopModel.getAccountShopsTotalCount(accountId);
+        return {
+          shops,
+          total_count: totalCount,
+        };
       });
+  },
+
+  async getAccountShopsTotalCount(accountId) {
+    return knex(shopModel.tableName)
+      .count("id")
+      .where("account_id", accountId)
+      .then((result) => parseInt(result[0].count) || null);
   },
 };
 
