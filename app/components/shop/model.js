@@ -11,14 +11,6 @@ const shopModel = {
       .then((result) => result[0]);
   },
 
-  async getShopDetailsByName(name) {
-    return await knex(shopModel.tableName)
-      .where("name", name)
-      .then((result) => {
-        return result[0];
-      });
-  },
-
   async getShopDetailsBySlug(slug) {
     return await knex("shop")
       .where("slug", slug)
