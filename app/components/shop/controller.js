@@ -4,6 +4,7 @@ const stripeModel = require("../stripe/model");
 const shopModel = require("../shop/model");
 const httpResource = require("../../http_resource");
 const validator = require("validator");
+const utilityController = require("../utility/controller");
 
 const shopController = {
   async createShop(request, response) {
@@ -34,8 +35,10 @@ const shopController = {
         if (introduction.length > 101)
           throw "Introduction should not exceed 101 characters";
       }
-      const gotShopDetailsByName = await shopModel.getShopDetailsByName(name);
-      if (gotShopDetailsByName) throw `${name} is already taken`;
+      const slug = utilityController.slugify(name);
+      console.log(slug);
+      const gotShopDetailsBySlug = await shopModel.getShopDetailsBySlug(slug);
+      if (gotShopDetailsBySlug) throw `${name} is already taken`;
       const createdAddressDetails = await addressModel.createAddress(address);
       const gotAccountDetails = await accountModel.getDetails(accountId);
       if (!gotAccountDetails.stripe) {
@@ -55,6 +58,7 @@ const shopController = {
         address_id: createdAddressDetails.id,
         contact_number,
         account_id: accountId,
+        slug,
       });
       const gotShopDetails = await shopModel.getShopDetails(createdShop.id);
       response.status(200).json(
