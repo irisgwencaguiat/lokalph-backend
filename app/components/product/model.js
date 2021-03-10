@@ -18,10 +18,7 @@ const productModel = {
   },
 
   async getProductCategories() {
-    return await knex("product_category").then((result) => {
-      console.log(result);
-      return result;
-    });
+    return await knex("product_category").then((result) => result);
   },
 };
 
