@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const slugify = require("slugify");
 
 const utilityController = {
   isObjectEmpty: (object) => {
@@ -16,6 +17,11 @@ const utilityController = {
   },
   validateHashPassword(plainTextPassword, hashedPassword) {
     return bcrypt.compareSync(plainTextPassword, hashedPassword);
+  },
+  slugify(word) {
+    return slugify(word, {
+      lower: true,
+    });
   },
 };
 
