@@ -21,6 +21,9 @@ const utilityController = {
   slugify(word) {
     return slugify(word, {
       lower: true,
+      replacement: "-",
+      remove: undefined,
+      strict: true,
     });
   },
 };
