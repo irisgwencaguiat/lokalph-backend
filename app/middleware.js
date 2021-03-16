@@ -1,9 +1,12 @@
 const httpResource = require("./http_resource");
 const passport = require("passport");
+const Multer = require("multer");
+const { diskStorage } = Multer;
+const fs = require("fs-extra");
 
 const middleware = {
   authentication: {
-    passportAuthenticate: (request, response, next) => {
+    passportAuthenticate(request, response, next) {
       passport.authenticate("jwt", { session: false }, (error, user) => {
         if (error)
           return response.status(401).json(
@@ -26,7 +29,7 @@ const middleware = {
       })(request, response, next);
     },
 
-    grantAccess: (roles) => {
+    grantAccess(roles) {
       return async (request, response, next) => {
         const { type } = request.user.account_type;
         if (!roles.includes(type))
@@ -40,6 +43,17 @@ const middleware = {
         next();
       };
     },
+  },
+  multer() {
+    return Multer({
+      storage: diskStorage({
+        destination(request, file, callback) {
+          const directory = process.cwd() + "/tmp/files";
+          fs.ensureDirSync(directory);
+          callback(null, directory);
+        },
+      }),
+    });
   },
 };
 
