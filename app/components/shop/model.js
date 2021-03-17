@@ -8,16 +8,16 @@ const shopModel = {
     return await knex(shopModel.tableName)
       .insert({ ...input })
       .returning(["id", "address_id", "account_id"])
-      .then((result) => {
-        return result[0];
-      });
+      .then((result) => result[0]);
   },
 
-  async getShopDetailsByName(name) {
-    return await knex(shopModel.tableName)
-      .where("name", name)
-      .then((result) => {
-        return result[0];
+  async getShopDetailsBySlug(slug) {
+    return await knex("shop")
+      .where("slug", slug)
+      .then(async (result) => {
+        if (result.length === 0) return null;
+        const id = result[0].id;
+        return await shopModel.getShopDetails(id);
       });
   },
 
