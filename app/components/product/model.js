@@ -1,4 +1,5 @@
 const knex = require("../../../database/knex");
+const imageModel = require("../image/model");
 
 const productModel = {
   tableName: "product",
@@ -19,6 +20,29 @@ const productModel = {
 
   async getProductCategories() {
     return await knex("product_category").then((result) => result);
+  },
+  async createProductImage(input) {
+    return await knex("product_image")
+      .insert({ ...input })
+      .returning(["id"])
+      .then((result) => result[0]);
+  },
+  async getProductDetails(id) {
+    return await knex(productModel.tableName)
+      .where("id", id)
+      .then(async (result) => {
+        const product = result[0];
+        const productImagesDetails = await knex("product_image")
+          .where("product_id", product.id)
+          .then((result2) => result2);
+        const images = await Promise.all(
+          productImagesDetails.map(async (image) => {
+            return await imageModel.getImageDetails(image.image_id);
+          })
+        );
+        product.images = Object.assign([], images);
+        return product;
+      });
   },
 };
 
