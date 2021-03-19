@@ -6,6 +6,9 @@ const shippingMethodModel = {
       .where("id", id)
       .then((result) => result[0]);
   },
+  async getShippingMethods() {
+    return await knex("shipping_method").then((result) => result);
+  },
 };
 
 module.exports = shippingMethodModel;

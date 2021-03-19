@@ -1,6 +1,7 @@
 const productModel = require("./model");
 const imageModel = require("../image/model");
 const keywordModel = require("../keyword/model");
+const shippingMethodModel = require("../shipping-method/model");
 const utilityController = require("../utility/controller");
 const cloudinaryController = require("../cloudinary/controller");
 const httpResource = require("../../http_resource");
@@ -162,6 +163,27 @@ const productController = {
           code: 200,
           message: "Records successfully got.",
           data: conditions,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
+  async getProductShippingMethods(request, response) {
+    try {
+      const shippingMethods = await shippingMethodModel.getShippingMethods();
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Records successfully got.",
+          data: shippingMethods,
         })
       );
     } catch (error) {
