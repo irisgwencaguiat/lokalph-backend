@@ -24,6 +24,9 @@ const productModel = {
   async getProductCategories() {
     return await knex("product_category").then((result) => result);
   },
+  async getProductConditions() {
+    return await knex("product_condition").then((result) => result);
+  },
   async createProductShippingMethod(input) {
     return await knex("product_shipping_method")
       .insert({ ...input })

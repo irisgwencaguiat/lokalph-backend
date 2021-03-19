@@ -153,6 +153,27 @@ const productController = {
       );
     }
   },
+  async getProductConditions(request, response) {
+    try {
+      const conditions = await productModel.getProductConditions();
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Records successfully got.",
+          data: conditions,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;

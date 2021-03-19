@@ -14,5 +14,6 @@ router.post(
 );
 
 router.get("/categories", productController.getProductCategories);
+router.get("/conditions", productController.getProductConditions);
 
 module.exports = router;
