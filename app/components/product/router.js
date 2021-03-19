@@ -15,5 +15,6 @@ router.post(
 
 router.get("/categories", productController.getProductCategories);
 router.get("/conditions", productController.getProductConditions);
+router.get("/shipping-methods", productController.getProductShippingMethods);
 
 module.exports = router;
