@@ -98,6 +98,15 @@ const productModel = {
         return product;
       });
   },
+  async getProductsByShop({ shopId, search, page, perPage }) {
+    return await knex("product")
+      .where("shop_id", shopId)
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then((result) => result);
+  },
 };
 
 module.exports = productModel;

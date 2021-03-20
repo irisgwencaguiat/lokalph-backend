@@ -1,5 +1,6 @@
 const httpResource = ({ success, code, message, data }) => {
   let errorMessage = message;
+  console.log(errorMessage);
   if (typeof message === "object") errorMessage = "Server error.";
   return {
     success,

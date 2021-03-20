@@ -2,6 +2,7 @@ const accountModel = require("../account/model");
 const addressModel = require("../address/model");
 const stripeModel = require("../stripe/model");
 const shopModel = require("../shop/model");
+const productModel = require("../product/model");
 const httpResource = require("../../http_resource");
 const validator = require("validator");
 const utilityController = require("../utility/controller");
@@ -15,9 +16,9 @@ const shopController = {
         introduction,
         address,
         contact_number,
-        stripe,
+        publishable_key,
+        secret_key,
       } = request.body;
-
       if (!name) throw "Name field is empty.";
       if (!contact_number) throw "Contact number field is empty.";
       if (!address) throw "Address field is empty.";
@@ -36,20 +37,17 @@ const shopController = {
           throw "Introduction should not exceed 101 characters";
       }
       const slug = utilityController.slugify(name);
-      console.log(slug);
       const gotShopDetailsBySlug = await shopModel.getShopDetailsBySlug(slug);
       if (gotShopDetailsBySlug) throw `${name} is already taken`;
       const createdAddressDetails = await addressModel.createAddress(address);
       const gotAccountDetails = await accountModel.getDetails(accountId);
-      if (!gotAccountDetails.stripe) {
-        if (!stripe.publishable_key) throw "Stripe publishable key is empty.";
-        if (!stripe.secret_key) throw "Stripe secret key is empty.";
-        const createdStripeDetails = await stripeModel.createStripe({
-          publishableKey: stripe.publishable_key,
-          secretKey: stripe.secret_key,
-        });
-        await accountModel.updateStripeId(accountId, createdStripeDetails.id);
-      }
+      if (!publishable_key) throw "Stripe publishable key is empty.";
+      if (!secret_key) throw "Stripe secret key is empty.";
+      const createdStripeDetails = await stripeModel.createStripe({
+        publishableKey: publishable_key,
+        secretKey: secret_key,
+      });
+      await accountModel.updateStripeId(accountId, createdStripeDetails.id);
       if (gotAccountDetails.account_type.id === 1)
         await accountModel.updateAccountType(accountId, 2);
       const createdShop = await shopModel.createShop({
@@ -103,6 +101,37 @@ const shopController = {
           code: 200,
           message: "Successfully got records.",
           data: shops,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
+  async getShopProducts(request, response) {
+    try {
+      const shopId = parseFloat(request.params.shop_id);
+      const perPage = parseFloat(request.query.per_page);
+      const page = parseFloat(request.query.page);
+      const search = request.query.search || null;
+
+      let products = await productModel.getProductsByShop({
+        shopId,
+        perPage,
+        page,
+      });
+
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: products,
         })
       );
     } catch (error) {
