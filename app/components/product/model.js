@@ -85,8 +85,8 @@ const productModel = {
             );
           })
         );
-        const shop = await shopModel.getShopDetails(product.shop_id);
-        product.shop = Object.assign({}, shop);
+        // const shop = await shopModel.getShopDetails(product.shop_id);
+        // product.shop = Object.assign({}, shop);
         product.category = Object.assign({}, productCategory);
         product.condition = Object.assign({}, productCondition);
         product.images = Object.assign([], images);
