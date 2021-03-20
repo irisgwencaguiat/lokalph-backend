@@ -113,37 +113,6 @@ const shopController = {
       );
     }
   },
-  async getShopProducts(request, response) {
-    try {
-      const shopId = parseFloat(request.params.shop_id);
-      const perPage = parseFloat(request.query.per_page);
-      const page = parseFloat(request.query.page);
-      const search = request.query.search || null;
-
-      let products = await productModel.getProductsByShop({
-        shopId,
-        perPage,
-        page,
-      });
-
-      response.status(200).json(
-        httpResource({
-          success: true,
-          code: 200,
-          message: "Successfully got records.",
-          data: products,
-        })
-      );
-    } catch (error) {
-      response.status(400).json(
-        httpResource({
-          success: false,
-          code: 400,
-          message: error,
-        })
-      );
-    }
-  },
 };
 
 module.exports = shopController;

@@ -57,7 +57,7 @@ const productController = {
 
       if (validator.isEmpty(name)) throw "Name field is empty.";
       if (images.length < 1) {
-        throw "Image field is empty.";
+        throw "Images field is empty.";
       }
 
       const slugifiedName = await utilityController.slugify(name);
@@ -156,6 +156,7 @@ const productController = {
       );
     }
   },
+
   async getProductConditions(request, response) {
     try {
       const conditions = await productModel.getProductConditions();
@@ -177,6 +178,7 @@ const productController = {
       );
     }
   },
+
   async getProductShippingMethods(request, response) {
     try {
       const shippingMethods = await shippingMethodModel.getShippingMethods();
@@ -186,6 +188,42 @@ const productController = {
           code: 200,
           message: "Records successfully got.",
           data: shippingMethods,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
+
+  async getShopProducts(request, response) {
+    try {
+      const shopId = parseInt(request.params.shop_id);
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const sort = request.query.sort || "asc";
+      const search = request.query.search || null;
+      const payload = {
+        shopId,
+        page,
+        perPage,
+        sort,
+        search,
+      };
+      let shops = [];
+      if (search) shops = await productModel.searchShopProducts(payload);
+      if (!search) shops = await productModel.getShopProducts(payload);
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: shops,
         })
       );
     } catch (error) {
