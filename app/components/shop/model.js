@@ -1,6 +1,5 @@
 const knex = require("../../../database/knex");
 const accountModel = require("../account/model");
-const productModel = require("../product/model");
 
 const shopModel = {
   tableName: "shop",

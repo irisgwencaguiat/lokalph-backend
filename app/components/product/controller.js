@@ -57,7 +57,7 @@ const productController = {
 
       if (validator.isEmpty(name)) throw "Name field is empty.";
       if (images.length < 1) {
-        throw "Image field is empty.";
+        throw "Images field is empty.";
       }
 
       const slugifiedName = await utilityController.slugify(name);
@@ -156,6 +156,7 @@ const productController = {
       );
     }
   },
+
   async getProductConditions(request, response) {
     try {
       const conditions = await productModel.getProductConditions();
@@ -177,6 +178,7 @@ const productController = {
       );
     }
   },
+
   async getProductShippingMethods(request, response) {
     try {
       const shippingMethods = await shippingMethodModel.getShippingMethods();
@@ -198,6 +200,8 @@ const productController = {
       );
     }
   },
+
+  async getShopProducts(request, response) {},
 };
 
 module.exports = productController;
