@@ -65,6 +65,7 @@ const shopModel = {
         };
       });
   },
+
   async searchAccountShops({ accountId, page, perPage, sort, search }) {
     return await knex(shopModel.tableName)
       .join("address", "shop.address_id", "=", "address.id")
@@ -73,7 +74,7 @@ const shopModel = {
       .andWhere("shop.name", "ilike", `%${search}%`)
       .orWhere("shop.contact_number", "ilike", `%${search}%`)
       .orWhere("address.value", "ilike", `%${search}%`)
-      .orderBy("created_at", sort)
+      .orderBy("shop.created_at", sort)
       .paginate({
         perPage: perPage,
         currentPage: page,

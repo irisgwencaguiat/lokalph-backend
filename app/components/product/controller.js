@@ -201,7 +201,41 @@ const productController = {
     }
   },
 
-  async getShopProducts(request, response) {},
+  async getShopProducts(request, response) {
+    try {
+      const shopId = parseInt(request.params.shop_id);
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const sort = request.query.sort || "asc";
+      const search = request.query.search || null;
+      const payload = {
+        shopId,
+        page,
+        perPage,
+        sort,
+        search,
+      };
+      let shops = [];
+      if (search) shops = await productModel.searchShopProducts(payload);
+      if (!search) shops = await productModel.getShopProducts(payload);
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: shops,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;

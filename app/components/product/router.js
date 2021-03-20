@@ -13,6 +13,7 @@ router.post(
   productController.createProduct
 );
 
+router.get("/shop/:shop_id", productController.getShopProducts);
 router.get("/categories", productController.getProductCategories);
 router.get("/conditions", productController.getProductConditions);
 router.get("/shipping-methods", productController.getProductShippingMethods);

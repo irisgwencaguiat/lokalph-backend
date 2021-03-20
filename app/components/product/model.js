@@ -98,6 +98,65 @@ const productModel = {
         return product;
       });
   },
+
+  async searchShopProducts({ shopId, page, perPage, sort, search }) {
+    return await knex("product")
+      .join("shop", "product.shop_id", "=", "shop.id")
+      .select(["product.id as id"])
+      .where("product.shop_id", shopId)
+      .andWhere("product.name", "ilike", `%${search}%`)
+      .andWhere("product.slug", "ilike", `%${search}%`)
+      .andWhere("product.description", "ilike", `%${search}%`)
+      .andWhere("shop.name", "ilike", `%${search}%`)
+      .orderBy("shop.created_at", sort)
+      .paginate({
+        perPage: perPage,
+        currentPage: page,
+      })
+      .then(async (result) => {
+        const data = result.data;
+        const products = await Promise.all(
+          data.map(
+            async (item) => await productModel.getProductDetails(item.id)
+          )
+        );
+        const totalCount = await productModel.getShopProductsTotalCount(shopId);
+        return {
+          products,
+          total_count: totalCount,
+        };
+      });
+  },
+
+  async getShopProducts({ shopId, page, perPage, sort }) {
+    return knex("product")
+      .where("shop_id", shopId)
+      .orderBy("created_at", sort)
+      .paginate({
+        perPage: perPage,
+        currentPage: page,
+      })
+      .then(async (result) => {
+        const data = result.data;
+        const products = await Promise.all(
+          data.map(
+            async (item) => await productModel.getProductDetails(item.id)
+          )
+        );
+        const totalCount = await productModel.getShopProductsTotalCount(shopId);
+        return {
+          products,
+          total_count: totalCount,
+        };
+      });
+  },
+
+  async getShopProductsTotalCount(shopId) {
+    return knex("product")
+      .count("id")
+      .where("shop_id", shopId)
+      .then((result) => parseInt(result[0].count) || null);
+  },
 };
 
 module.exports = productModel;
