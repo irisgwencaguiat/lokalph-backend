@@ -16,9 +16,9 @@ const shopController = {
         introduction,
         address,
         contact_number,
-        stripe,
+        publishable_key,
+        secret_key,
       } = request.body;
-
       if (!name) throw "Name field is empty.";
       if (!contact_number) throw "Contact number field is empty.";
       if (!address) throw "Address field is empty.";
@@ -37,20 +37,17 @@ const shopController = {
           throw "Introduction should not exceed 101 characters";
       }
       const slug = utilityController.slugify(name);
-      console.log(slug);
       const gotShopDetailsBySlug = await shopModel.getShopDetailsBySlug(slug);
       if (gotShopDetailsBySlug) throw `${name} is already taken`;
       const createdAddressDetails = await addressModel.createAddress(address);
       const gotAccountDetails = await accountModel.getDetails(accountId);
-      if (!gotAccountDetails.stripe) {
-        if (!stripe.publishable_key) throw "Stripe publishable key is empty.";
-        if (!stripe.secret_key) throw "Stripe secret key is empty.";
-        const createdStripeDetails = await stripeModel.createStripe({
-          publishableKey: stripe.publishable_key,
-          secretKey: stripe.secret_key,
-        });
-        await accountModel.updateStripeId(accountId, createdStripeDetails.id);
-      }
+      if (!publishable_key) throw "Stripe publishable key is empty.";
+      if (!secret_key) throw "Stripe secret key is empty.";
+      const createdStripeDetails = await stripeModel.createStripe({
+        publishableKey: publishable_key,
+        secretKey: secret_key,
+      });
+      await accountModel.updateStripeId(accountId, createdStripeDetails.id);
       if (gotAccountDetails.account_type.id === 1)
         await accountModel.updateAccountType(accountId, 2);
       const createdShop = await shopModel.createShop({
