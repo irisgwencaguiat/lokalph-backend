@@ -13,5 +13,5 @@ router.post(
 );
 
 router.get("/account/:account_id", shopController.getAccountShops);
-
+router.get("/product/:shop_id", shopController.getShopProducts);
 module.exports = router;

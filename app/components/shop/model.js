@@ -1,5 +1,6 @@
 const knex = require("../../../database/knex");
 const accountModel = require("../account/model");
+const productModel = require("../product/model");
 
 const shopModel = {
   tableName: "shop",
@@ -65,7 +66,6 @@ const shopModel = {
         };
       });
   },
-
   async searchAccountShops({ accountId, page, perPage, sort, search }) {
     return await knex(shopModel.tableName)
       .join("address", "shop.address_id", "=", "address.id")

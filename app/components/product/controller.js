@@ -23,10 +23,18 @@ const productController = {
         keywords,
       } = request.body;
 
+      if (!shop_id) throw "Shop id field is empty.";
+      if (!name) throw "Name field is empty.";
+      if (!stock) throw "Stock field is empty.";
+      if (!price) throw "Price field is empty.";
+      if (!product_category_id) throw "Product Category Id field is empty.";
+      if (!product_condition_id) throw "Product condition id field is empty.";
+      if (!shipping_method_ids) throw "Shipping Method id field is empty.";
+
       const parsedShopId = parseFloat(shop_id);
       const parsedStock = parseFloat(stock);
       const parsedPrice = parseFloat(price);
-      const parsedSalePrice = parseFloat(sale_price);
+      const parsedSalePrice = sale_price ? parseFloat(sale_price) : 0;
       const parsedProductCategoryId = parseFloat(product_category_id);
       const parsedProductConditionId = parseFloat(product_condition_id);
       const parsedProductShippingMethodIds = await shipping_method_ids.map(
@@ -39,12 +47,6 @@ const productController = {
 
       if (parsedStock < 1) throw "Stock can't be less than 1.";
       if (parsedPrice < 1) throw "Price can't be less than 1.";
-      if (parsedSalePrice < 1) throw "Sale price can't be less than 1.";
-
-      if (!name) throw "Name field is empty.";
-      if (!stock) throw "Stock field is empty.";
-      if (!price) throw "Price field is empty.";
-      if (!sale_price) throw "Sale price field is empty.";
 
       if (isNaN(parsedStock) || typeof parsedStock !== "number")
         throw "Stock should only be an integer.";
