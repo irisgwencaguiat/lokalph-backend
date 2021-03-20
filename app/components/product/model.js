@@ -101,14 +101,11 @@ const productModel = {
 
   async searchShopProducts({ shopId, page, perPage, sort, search }) {
     return await knex("product")
-      .join("shop", "product.shop_id", "=", "shop.id")
       .select(["product.id as id"])
       .where("product.shop_id", shopId)
       .andWhere("product.name", "ilike", `%${search}%`)
       .andWhere("product.slug", "ilike", `%${search}%`)
-      .andWhere("product.description", "ilike", `%${search}%`)
-      .andWhere("shop.name", "ilike", `%${search}%`)
-      .orderBy("shop.created_at", sort)
+      .orderBy("product.created_at", sort)
       .paginate({
         perPage: perPage,
         currentPage: page,
