@@ -236,6 +236,28 @@ const productController = {
       );
     }
   },
+  async getProductDetailsBySlug(request, response) {
+    try {
+      const { slug } = request.params;
+      const productDetails = await productModel.getProductDetailsBySlug(slug);
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: productDetails,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;
