@@ -178,7 +178,7 @@ const productModel = {
       .select(["product.id as id"])
       .where("product.shop_id", shopId)
       .andWhereRaw(
-        `to_tsvector(product.name) @@ to_tsquery('${search.replace(
+        `to_tsvector(product.name || ' ' || product.description) @@ to_tsquery('${search.replace(
           /\s/g,
           "&"
         )}')`
