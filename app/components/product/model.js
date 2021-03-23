@@ -180,7 +180,7 @@ const productModel = {
       .andWhereRaw(
         `to_tsvector(product.name || ' ' || product.description) @@ to_tsquery('${search.replace(
           /\s/g,
-          "&"
+          ":*&"
         )}')`
       )
       .orderBy("product.created_at", sort)
