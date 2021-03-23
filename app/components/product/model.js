@@ -177,8 +177,12 @@ const productModel = {
     return await knex("product")
       .select(["product.id as id"])
       .where("product.shop_id", shopId)
-      .andWhere("product.name", "ilike", `%${search}%`)
-      .andWhere("product.slug", "ilike", `%${search}%`)
+      .andWhereRaw(
+        `to_tsvector(product.name) @@ to_tsquery('${search.replace(
+          /\s/g,
+          "|"
+        )}')`
+      )
       .orderBy("product.created_at", sort)
       .paginate({
         perPage: perPage,
