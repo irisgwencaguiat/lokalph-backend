@@ -26,7 +26,7 @@ router.get("/categories", productController.getProductCategories);
 router.get("/conditions", productController.getProductConditions);
 router.get("/shipping-methods", productController.getProductShippingMethods);
 router.get(
-  "/:shop_id/:product_slug",
+  "/shop/:shop_id/:product_slug",
   productController.getProductDetailsBySlug
 );
 router.get("/inquiries/:product_id", productController.getProductInquiries);
