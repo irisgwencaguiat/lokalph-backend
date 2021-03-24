@@ -232,24 +232,25 @@ const productModel = {
       .where("shop_id", shopId)
       .then((result) => parseInt(result[0].count) || null);
   },
-  async getProductDetailsBySlug(slug) {
+  async getProductDetailsBySlug({ shop_id, product_slug }) {
     return await knex("product")
-      .where("slug", slug)
+      .where("slug", product_slug)
+      .andWhere("shop_id", shop_id)
       .then(async (result) => {
         const product = result[0];
+        if (!product) {
+          return;
+        }
         const productCategory = await productModel.getProductCategoryDetails(
           product.product_category_id
         );
         const productCondition = await productModel.getProductConditionDetails(
           product.product_condition_id
         );
-
         const images = await productModel.getProductImagesDetails(product.id);
-
         const keywords = await productModel.getProductKeywordsDetails(
           product.id
         );
-
         const shippingMethods = await productModel.getProductShippingMethodsDetails(
           product.id
         );
@@ -289,6 +290,36 @@ const productModel = {
         delete productInquiry.product_id;
         return productInquiry;
       });
+  },
+  async getProductInquiries({ productId, page, perPage, sort }) {
+    return await knex("product_inquiry")
+      .where("product_id", productId)
+      .orderBy("created_at", sort)
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then(async (result) => {
+        const data = result.data;
+        const productInquiries = await Promise.all(
+          data.map(async (item) => {
+            return await productModel.getProductInquiryById(item.id);
+          })
+        );
+        const totalCount = await productModel.getProductInquiriesTotalCount(
+          productId
+        );
+        return {
+          inquiries: productInquiries,
+          total_count: totalCount,
+        };
+      });
+  },
+  async getProductInquiriesTotalCount(productId) {
+    return await knex("product_inquiry")
+      .count("id")
+      .where("product_id", productId)
+      .then((result) => result[0].count);
   },
 };
 

@@ -238,8 +238,12 @@ const productController = {
   },
   async getProductDetailsBySlug(request, response) {
     try {
-      const { slug } = request.params;
-      const productDetails = await productModel.getProductDetailsBySlug(slug);
+      const { shop_id, product_slug } = request.params;
+      const productDetails = await productModel.getProductDetailsBySlug({
+        shop_id: parseInt(shop_id),
+        product_slug,
+      });
+      if (!productDetails) throw "Product does not exist.";
       response.status(200).json(
         httpResource({
           success: true,
@@ -262,16 +266,16 @@ const productController = {
     try {
       const { product_id, message } = request.body;
       const { id } = request.user;
-      console.log(product_id);
-      console.log(message);
-      console.log(id);
-      const createdPoductInquiry = await productModel.createProductInquiry({
+
+      if (message.length > 100)
+        throw "Inquiry message shouldn't exceed 100 characters.";
+      const createdProductInquiry = await productModel.createProductInquiry({
         product_id,
         message,
         account_id: id,
       });
       const productInquiryDetails = await productModel.getProductInquiryById(
-        createdPoductInquiry.id
+        createdProductInquiry.id
       );
       response.status(200).json(
         httpResource({
@@ -279,6 +283,37 @@ const productController = {
           code: 200,
           message: "Successfully got records.",
           data: productInquiryDetails,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
+  async getProductInquiries(request, response) {
+    try {
+      const { product_id } = request.params;
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const sort = request.query.sort || "desc";
+      const payload = {
+        productId: parseInt(product_id),
+        page,
+        perPage,
+        sort,
+      };
+      let productInquiries = await productModel.getProductInquiries(payload);
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: productInquiries,
         })
       );
     } catch (error) {
