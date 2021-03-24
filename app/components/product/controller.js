@@ -258,6 +258,39 @@ const productController = {
       );
     }
   },
+  async createProductInquiry(request, response) {
+    try {
+      const { product_id, message } = request.body;
+      const { id } = request.user;
+      console.log(product_id);
+      console.log(message);
+      console.log(id);
+      const createdPoductInquiry = await productModel.createProductInquiry({
+        product_id,
+        message,
+        account_id: id,
+      });
+      const productInquiryDetails = await productModel.getProductInquiryById(
+        createdPoductInquiry.id
+      );
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: productInquiryDetails,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;
