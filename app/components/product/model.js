@@ -266,6 +266,30 @@ const productModel = {
         return product;
       });
   },
+  async createProductInquiry(input) {
+    return await knex("product_inquiry")
+      .insert({ ...input })
+      .returning(["id"])
+      .then((result) => result[0]);
+  },
+  async getProductInquiryById(id) {
+    return await knex("product_inquiry")
+      .where("id", id)
+      .then(async (result) => {
+        const productInquiry = result[0];
+        const account = await productModel.getProductAccountDetails(
+          productInquiry.account_id
+        );
+        const product = await productModel.getProductDetails(
+          productInquiry.product_id
+        );
+        productInquiry.account = Object.assign({}, account);
+        productInquiry.product = Object.assign({}, product);
+        delete productInquiry.account_id;
+        delete productInquiry.product_id;
+        return productInquiry;
+      });
+  },
 };
 
 module.exports = productModel;
