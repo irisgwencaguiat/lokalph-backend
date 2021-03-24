@@ -25,6 +25,9 @@ router.get("/shop/:shop_id", productController.getShopProducts);
 router.get("/categories", productController.getProductCategories);
 router.get("/conditions", productController.getProductConditions);
 router.get("/shipping-methods", productController.getProductShippingMethods);
-router.get("/:slug", productController.getProductDetailsBySlug);
-
+router.get(
+  "/:shop_id/:product_slug",
+  productController.getProductDetailsBySlug
+);
+router.get("/inquiries/:product_id", productController.getProductInquiries);
 module.exports = router;
