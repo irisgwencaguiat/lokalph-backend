@@ -370,6 +370,31 @@ const productController = {
       );
     }
   },
+  async getProductInquiryReply(request, response) {
+    try {
+      const productInquiryId = parseInt(request.params.product_inquiry_id);
+      const productInquiryReplyDetails = await productModel.getProductInquiryReply(
+        productInquiryId
+      );
+
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: productInquiryReplyDetails,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;

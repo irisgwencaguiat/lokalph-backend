@@ -332,6 +332,29 @@ const productModel = {
       .where("id", id)
       .then(async (result) => {
         const productInquiryReply = result[0];
+        const productInquiry = await productModel.getProductInquiryById(
+          productInquiryReply.product_inquiry_id
+        );
+        const account = await productModel.getProductAccountDetails(
+          productInquiryReply.account_id
+        );
+        const product = await productModel.getProductDetails(
+          productInquiryReply.product_id
+        );
+        productInquiryReply.account = Object.assign({}, account);
+        productInquiryReply.product = Object.assign({}, product);
+        productInquiryReply.inquiry = Object.assign({}, productInquiry);
+        delete productInquiryReply.account_id;
+        delete productInquiryReply.product_id;
+        delete productInquiryReply.product_inquiry_id;
+        return productInquiryReply;
+      });
+  },
+  async getProductInquiryReply(productInquiryId) {
+    return await knex("product_inquiry_reply")
+      .where("product_inquiry_id", productInquiryId)
+      .then(async (result) => {
+        const productInquiryReply = result[0];
         const productIquiry = await productModel.getProductInquiryById(
           productInquiryReply.product_inquiry_id
         );
