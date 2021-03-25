@@ -13,4 +13,5 @@ router.post(
 );
 
 router.get("/account/:account_id", shopController.getAccountShops);
+router.get("/slug/:slug", shopController.getShopDetailsBySlug);
 module.exports = router;

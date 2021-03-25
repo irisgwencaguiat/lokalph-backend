@@ -355,7 +355,7 @@ const productModel = {
       .where("product_inquiry_id", productInquiryId)
       .then(async (result) => {
         const productInquiryReply = result[0];
-        const productIquiry = await productModel.getProductInquiryById(
+        const productInquiry = await productModel.getProductInquiryById(
           productInquiryReply.product_inquiry_id
         );
         const account = await productModel.getProductAccountDetails(
@@ -366,7 +366,7 @@ const productModel = {
         );
         productInquiryReply.account = Object.assign({}, account);
         productInquiryReply.product = Object.assign({}, product);
-        productInquiryReply.inquiry = Object.assign({}, productIquiry);
+        productInquiryReply.inquiry = Object.assign({}, productInquiry);
         delete productInquiryReply.account_id;
         delete productInquiryReply.product_id;
         delete productInquiryReply.product_inquiry_id;
