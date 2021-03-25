@@ -266,9 +266,13 @@ const productController = {
     try {
       const { product_id, message } = request.body;
       const { id } = request.user;
+      if (message.length === 0) throw "Message field is empty.";
 
       if (message.length > 100)
         throw "Inquiry message shouldn't exceed 100 characters.";
+
+      if (!product_id) throw "Product Id field is empty.";
+
       const createdProductInquiry = await productModel.createProductInquiry({
         product_id,
         message,
@@ -314,6 +318,46 @@ const productController = {
           code: 200,
           message: "Successfully got records.",
           data: productInquiries,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
+  async createProductInquiryReply(request, response) {
+    try {
+      const { product_id, product_inquiry_id, message } = request.body;
+      const { id } = request.user;
+      if (!message) throw "Message field is empty.";
+      if (message.length === 0) throw "Message field is empty.";
+      if (message.length > 2500)
+        throw "Inquiry message shouldn't exceed 100 characters.";
+      if (!product_id) throw "Product Id field is empty.";
+      if (!product_inquiry_id) throw "Product inquiry field is empty";
+      const createdProductInquiryReply = await productModel.createProductInquiryReply(
+        {
+          product_id,
+          product_inquiry_id,
+          message,
+          account_id: id,
+        }
+      );
+
+      const productInquiryReplyDetails = await productModel.getProductInquiryReplyById(
+        createdProductInquiryReply.id
+      );
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: productInquiryReplyDetails,
         })
       );
     } catch (error) {
