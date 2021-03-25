@@ -38,4 +38,8 @@ router.get(
   productController.getProductDetailsBySlug
 );
 router.get("/inquiries/:product_id", productController.getProductInquiries);
+router.get(
+  "/inquiry/reply/:product_inquiry_id",
+  productController.getProductInquiryReply
+);
 module.exports = router;
