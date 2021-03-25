@@ -20,6 +20,14 @@ router.post(
   ],
   productController.createProductInquiry
 );
+router.post(
+  "/inquiry/reply",
+  [
+    middleware.authentication.passportAuthenticate,
+    middleware.authentication.grantAccess(["seller", "admin"]),
+  ],
+  productController.createProductInquiryReply
+);
 
 router.get("/shop/:shop_id", productController.getShopProducts);
 router.get("/categories", productController.getProductCategories);
