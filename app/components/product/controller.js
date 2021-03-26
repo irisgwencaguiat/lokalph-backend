@@ -301,12 +301,12 @@ const productController = {
   },
   async getProductInquiries(request, response) {
     try {
-      const { product_id } = request.params;
+      const productId = parseInt(request.params.product_id);
       const page = parseInt(request.query.page) || 1;
       const perPage = parseInt(request.query.per_page) || 5;
       const sort = request.query.sort || "desc";
       const payload = {
-        productId: parseInt(product_id),
+        productId,
         page,
         perPage,
         sort,
@@ -413,8 +413,6 @@ const productController = {
         });
       }
 
-      productView = parseInt(productView) || 0;
-
       response.status(200).json(
         httpResource({
           success: true,
@@ -435,14 +433,14 @@ const productController = {
   },
   async getProductViews(request, response) {
     try {
-      const { product_id } = request.params;
-      const productViewCount = await productModel.getProductViews(product_id);
+      const productId = parseInt(request.params.product_id);
+      const productViewCount = await productModel.getProductViews(productId);
       response.status(200).json(
         httpResource({
           success: true,
           code: 200,
           message: "Successfully got records.",
-          data: productViewCount,
+          data: parseInt(productViewCount),
         })
       );
     } catch (error) {
