@@ -399,10 +399,42 @@ const productController = {
     try {
       const { id } = request.user;
       const { product_id } = request.body;
-      const productViewCount = await productModel.createProductView({
-        account_id: id,
-        product_id,
-      });
+      const doesProductViewExist = await productModel.doesProductViewExist(
+        id,
+        product_id
+      );
+      let productView;
+      if (doesProductViewExist) {
+        productView = null;
+      } else {
+        productView = await productModel.createProductView({
+          account_id: id,
+          product_id,
+        });
+      }
+
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: productView,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
+  async getProductViews(request, response) {
+    try {
+      const { product_id } = request.params;
+      const productViewCount = await productModel.getProductViews(product_id);
       response.status(200).json(
         httpResource({
           success: true,
