@@ -400,6 +400,40 @@ const productModel = {
       .where("product_id", productId)
       .then((result) => result[0].count);
   },
+  async doesProductLikeExist(accountId, productId) {
+    return await knex("product_like")
+      .where("account_id", accountId)
+      .andWhere("product_id", productId)
+      .then((result) => {
+        return result.length > 0;
+      });
+  },
+  async createProductLike(input) {
+    return await knex("product_like")
+      .insert({ ...input })
+      .returning(["id"])
+      .then((result) => {
+        return result[0];
+      });
+  },
+  async getProductLikeDetailsById(id) {
+    return await knex("product_like")
+      .where("id", id)
+      .then(async (result) => {
+        const productLike = result[0];
+        const account = await productModel.getProductAccountDetails(
+          productLike.account_id
+        );
+        const product = await productModel.getProductDetails(
+          productLike.product_id
+        );
+        productLike.account = Object.assign({}, account);
+        productLike.product = Object.assign({}, product);
+        delete productLike.account_id;
+        delete productLike.product_id;
+        return productLike;
+      });
+  },
 };
 
 module.exports = productModel;
