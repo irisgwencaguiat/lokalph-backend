@@ -434,6 +434,13 @@ const productModel = {
         return productLike;
       });
   },
+  async getProductLikes(productId) {
+    return await knex("product_like")
+      .where("product_id", productId)
+      .then((result) => {
+        return result;
+      });
+  },
 };
 
 module.exports = productModel;

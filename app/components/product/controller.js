@@ -491,6 +491,28 @@ const productController = {
       );
     }
   },
+  async getProductLikes(request, response) {
+    try {
+      const productId = parseInt(request.params.product_id);
+      const productLikes = await productModel.getProductLikes(productId);
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: productLikes,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;

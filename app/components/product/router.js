@@ -59,4 +59,5 @@ router.get(
   productController.getProductInquiryReply
 );
 router.get("/views/:product_id", productController.getProductViews);
+router.get("/likes/:product_id", productController.getProductLikes);
 module.exports = router;
