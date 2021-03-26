@@ -373,6 +373,16 @@ const productModel = {
         return productInquiryReply;
       });
   },
+  async createProductView(input) {
+    return await knex("product_view")
+      .insert({ ...input })
+      .returning(["id"])
+      .then((result) => {
+        if (result) {
+          return null;
+        }
+      });
+  },
 };
 
 module.exports = productModel;

@@ -395,6 +395,32 @@ const productController = {
       );
     }
   },
+  async createProductView(request, response) {
+    try {
+      const { id } = request.user;
+      const { product_id } = request.body;
+      const productViewCount = await productModel.createProductView({
+        account_id: id,
+        product_id,
+      });
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: productViewCount,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;
