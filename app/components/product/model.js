@@ -437,8 +437,38 @@ const productModel = {
   async getProductLikes(productId) {
     return await knex("product_like")
       .where("product_id", productId)
-      .then((result) => {
-        return result;
+      .then(async (result) => {
+        return await Promise.all(
+          result.map(async (item) => {
+            const productLike = item;
+            const account = await productModel.getProductAccountDetails(
+              productLike.account_id
+            );
+            productLike.account = Object.assign({}, account);
+            delete productLike.account_id;
+            return productLike;
+          })
+        );
+      });
+  },
+  async deleteProductLike(productId, accountId) {
+    await knex("product_like")
+      .where("product_id", productId)
+      .andWhere("account_id", accountId)
+      .del();
+  },
+  async getProductLike(productId, accountId) {
+    return await knex("product_like")
+      .where("product_id", productId)
+      .andWhere("account_id", accountId)
+      .then(async (result) => {
+        const productLike = result[0];
+        const account = await productModel.getProductAccountDetails(
+          productLike.account_id
+        );
+        productLike.account = Object.assign({}, account);
+        delete productLike.account_id;
+        return productLike;
       });
   },
 };
