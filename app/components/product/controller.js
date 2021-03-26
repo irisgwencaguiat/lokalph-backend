@@ -513,6 +513,40 @@ const productController = {
       );
     }
   },
+  async deleteProductLike(request, response) {
+    try {
+      const { id } = request.user;
+      const productId = parseInt(request.params.product_id);
+
+      const doesProductLikeExist = await productModel.doesProductLikeExist(
+        id,
+        productId
+      );
+      let productLike;
+      if (doesProductLikeExist) {
+        productLike = await productModel.getProductLike(productId, id);
+        await productModel.deleteProductLike(productId, id);
+      } else {
+        productLike = null;
+      }
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: productLike,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;
