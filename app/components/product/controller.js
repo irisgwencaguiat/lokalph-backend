@@ -413,8 +413,6 @@ const productController = {
         });
       }
 
-      productView = parseInt(productView) || 0;
-
       response.status(200).json(
         httpResource({
           success: true,
@@ -442,7 +440,7 @@ const productController = {
           success: true,
           code: 200,
           message: "Successfully got records.",
-          data: productViewCount,
+          data: parseInt(productViewCount),
         })
       );
     } catch (error) {
