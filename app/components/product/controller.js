@@ -453,6 +453,44 @@ const productController = {
       );
     }
   },
+  async createProductLike(request, response) {
+    try {
+      const { id } = request.user;
+      const { product_id } = request.body;
+      const doesProductLikeExist = await productModel.doesProductLikeExist(
+        id,
+        product_id
+      );
+      let productLike;
+      if (doesProductLikeExist) {
+        productLike = null;
+      } else {
+        const createdProductLike = await productModel.createProductLike({
+          account_id: id,
+          product_id,
+        });
+        productLike = await productModel.getProductLikeDetailsById(
+          createdProductLike.id
+        );
+      }
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: productLike,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;
