@@ -355,6 +355,9 @@ const productModel = {
       .where("product_inquiry_id", productInquiryId)
       .then(async (result) => {
         const productInquiryReply = result[0];
+        if (!productInquiryReply) {
+          return null;
+        }
         const productInquiry = await productModel.getProductInquiryById(
           productInquiryReply.product_inquiry_id
         );
