@@ -413,6 +413,8 @@ const productController = {
         });
       }
 
+      productView = parseInt(productView) || 0;
+
       response.status(200).json(
         httpResource({
           success: true,

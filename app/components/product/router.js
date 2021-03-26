@@ -28,14 +28,7 @@ router.post(
   ],
   productController.createProductInquiryReply
 );
-router.post(
-  "/view",
-  [
-    middleware.authentication.passportAuthenticate,
-    middleware.authentication.grantAccess(["customer", "seller", "admin"]),
-  ],
-  productController.createProductView
-);
+router.post("/view", productController.createProductView);
 
 router.get("/shop/:shop_id", productController.getShopProducts);
 router.get("/categories", productController.getProductCategories);
