@@ -386,6 +386,20 @@ const productModel = {
         }
       });
   },
+  async doesProductViewExist(accountId, productId) {
+    return await knex("product_view")
+      .where("account_id", accountId)
+      .andWhere("product_id", productId)
+      .then((result) => {
+        return result.length > 0;
+      });
+  },
+  async getProductViews(productId) {
+    return await knex("product_view")
+      .count("id")
+      .where("product_id", productId)
+      .then((result) => result[0].count);
+  },
 };
 
 module.exports = productModel;

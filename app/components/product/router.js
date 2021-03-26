@@ -50,4 +50,5 @@ router.get(
   "/inquiry/reply/:product_inquiry_id",
   productController.getProductInquiryReply
 );
+router.get("/views/:product_id", productController.getProductViews);
 module.exports = router;
