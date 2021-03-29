@@ -16,7 +16,7 @@ exports.up = function (knex) {
     table.integer("product_id").references("id").inTable("product");
     table.integer("account_id").references("id").inTable("account");
     table
-      .integer("shopping_method_id")
+      .integer("shipping_method_id")
       .references("id")
       .inTable("shipping_method");
   });
