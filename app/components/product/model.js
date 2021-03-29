@@ -471,6 +471,35 @@ const productModel = {
         return productLike;
       });
   },
+  async createProductOffer(input) {
+    return await knex("product_offer")
+      .insert({ ...input })
+      .returning(["id"])
+      .then((result) => result[0]);
+  },
+  async getProductOfferDetailsById(id) {
+    return await knex("product_offer")
+      .where("id", id)
+      .then(async (result) => {
+        const productOffer = result[0];
+        const product = await productModel.getProductDetails(
+          productOffer.product_id
+        );
+        const shop = await productModel.getProductShopDetails(
+          productOffer.shop_id
+        );
+        const account = await productModel.getProductAccountDetails(
+          productOffer.account_id
+        );
+        productOffer.product = Object.assign({}, product);
+        productOffer.shop = Object.assign({}, shop);
+        productOffer.account = Object.assign({}, account);
+        delete productOffer.product_id;
+        delete productOffer.shop_id;
+        delete productOffer.account_id;
+        return productOffer;
+      });
+  },
 };
 
 module.exports = productModel;
