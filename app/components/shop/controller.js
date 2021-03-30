@@ -135,6 +135,26 @@ const shopController = {
       );
     }
   },
+  async getShopOffers(request, response) {
+    try {
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: shopDetails,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = shopController;

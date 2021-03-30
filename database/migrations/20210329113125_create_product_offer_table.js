@@ -1,5 +1,5 @@
 exports.up = function (knex) {
-  return knex.schema.createTable("product_offer", function (table) {
+  return knex.schema.createTable("offer", function (table) {
     table.increments();
     table.string("note");
     table.string("status").defaultTo("pending");
@@ -23,5 +23,5 @@ exports.up = function (knex) {
 };
 
 exports.down = function (knex) {
-  return knex.schema.dropTableIfExists("product_offer");
+  return knex.schema.dropTableIfExists("offer");
 };

@@ -547,57 +547,6 @@ const productController = {
       );
     }
   },
-  async createProductOffer(request, response) {
-    try {
-      const { id } = request.user;
-      const {
-        note,
-        quantity,
-        total_price,
-        product_id,
-        shop_id,
-        shipping_method_id,
-      } = request.body;
-      const product = await productModel.getProductDetails(product_id);
-      console.log(product.stock);
-      if (!quantity) throw "Quantity can't be empty.";
-      if (!total_price) throw "Total price can't be empty.";
-      if (quantity < 1) throw "Quantity can't be less than 1.";
-      if (quantity > product.stock)
-        throw "The quantity cannot exceed the product stock.";
-      if (total_price < 1) throw "Total price can't be less than 1.";
-      if (note && note.length > 250)
-        throw "Note shouldn't exceed 250 characters.";
-      const createdProductOffer = await productModel.createProductOffer({
-        note: note || null,
-        quantity,
-        total_price,
-        product_id,
-        shop_id,
-        account_id: id,
-        shipping_method_id,
-      });
-      const productOffer = await productModel.getProductOfferDetailsById(
-        createdProductOffer.id
-      );
-      response.status(200).json(
-        httpResource({
-          success: true,
-          code: 200,
-          message: "Successfully got records.",
-          data: productOffer,
-        })
-      );
-    } catch (error) {
-      response.status(400).json(
-        httpResource({
-          success: false,
-          code: 400,
-          message: error,
-        })
-      );
-    }
-  },
 };
 
 module.exports = productController;
