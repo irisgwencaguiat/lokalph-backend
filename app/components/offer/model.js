@@ -183,7 +183,7 @@ const offerModel = {
       .andWhereBetween("created_at", [dateFrom, dateTo])
       .orderBy("created_at", "desc")
       .then(async (result) => {
-        if (result.length < 1) return null;
+        if (result.length < 1) return [];
         return await Promise.all(
           result.map(async (data) => {
             const offer = data;
