@@ -178,17 +178,26 @@ const offerModel = {
     );
   },
   async getShopOffers({ shop_id, date_from, date_to, page, perPage }) {
-    return await knex("offer")
+    const shopOffers = await knex("offer")
       .where("shop_id", shop_id)
-      .andWhere("created_at", ">=", date_from)
-      .andWhere("created_at", "<=", date_to)
+      // .andWhere((qb) =>
+      //   qb
+      //     .where("created_at", ">=", `${date_from}:00:00:00`)
+      //     .andWhere("created_at", "<=", `${date_to}:23:59:59`)
+      // )
+      // .orWhere((qb) =>
+      //   qb
+      //     .where("created_at", "=", date_from)
+      //     .andWhere("created_at", "=", date_to)
+      // )
+      .andWhere("created_at", ">=", `${date_from}:00:00:00`)
+      .andWhere("created_at", "<=", `${date_to}:23:59:59`)
       .orderBy("created_at", "desc")
       .paginate({
         perPage,
         currentPage: page,
       })
       .then(async (result) => {
-        console.log(result);
         if (result.data.length < 1) return [];
         return await Promise.all(
           result.data.map(async (data) => {
@@ -214,8 +223,24 @@ const offerModel = {
             return offer;
           })
         );
-        return shopOffers;
       });
+    const totalCount = await offerModel.getShopOffersTotalCount(
+      shop_id,
+      date_from,
+      date_to
+    );
+    return {
+      shop_offers: shopOffers,
+      total_count: totalCount,
+    };
+  },
+  async getShopOffersTotalCount(shop_id, date_from, date_to) {
+    return await knex("offer")
+      .count("id")
+      .where("shop_id", shop_id)
+      .andWhere("created_at", ">=", `${date_from}:00:00:00`)
+      .andWhere("created_at", "<=", `${date_to}:23:59:59`)
+      .then((result) => result[0].count);
   },
 };
 
