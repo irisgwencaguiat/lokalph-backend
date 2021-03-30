@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const shopController = require("./controller");
+const offerController = require("./controller");
 const middleware = require("../../middleware");
 
 router.post(
@@ -9,10 +9,16 @@ router.post(
     middleware.authentication.passportAuthenticate,
     middleware.authentication.grantAccess(["customer", "seller", "admin"]),
   ],
-  shopController.createShop
+  offerController.createOffer
 );
 
-router.get("/account/:account_id", shopController.getAccountShops);
-router.get("/slug/:slug", shopController.getShopDetailsBySlug);
+router.get(
+  "/shop/:shop_id/:date_from/:date_to",
+  [
+    middleware.authentication.passportAuthenticate,
+    middleware.authentication.grantAccess(["seller"]),
+  ],
+  offerController.getShopOffers
+);
 
 module.exports = router;

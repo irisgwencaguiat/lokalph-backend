@@ -44,14 +44,6 @@ router.post(
   ],
   productController.createProductLike
 );
-router.post(
-  "/offer",
-  [
-    middleware.authentication.passportAuthenticate,
-    middleware.authentication.grantAccess(["customer", "seller", "admin"]),
-  ],
-  productController.createProductOffer
-);
 
 router.get("/shop/:shop_id", productController.getShopProducts);
 router.get("/categories", productController.getProductCategories);

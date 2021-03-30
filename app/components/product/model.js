@@ -474,40 +474,7 @@ const productModel = {
         return productLike;
       });
   },
-  async createProductOffer(input) {
-    return await knex("product_offer")
-      .insert({ ...input })
-      .returning(["id"])
-      .then((result) => result[0]);
-  },
-  async getProductOfferDetailsById(id) {
-    return await knex("product_offer")
-      .where("id", id)
-      .then(async (result) => {
-        const productOffer = result[0];
-        const product = await productModel.getProductDetails(
-          productOffer.product_id
-        );
-        const shop = await productModel.getProductShopDetails(
-          productOffer.shop_id
-        );
-        const account = await productModel.getProductAccountDetails(
-          productOffer.account_id
-        );
-        const shippingMethod = await productModel.getProductShippingMethod(
-          productOffer.shipping_method_id
-        );
-        productOffer.product = Object.assign({}, product);
-        productOffer.shop = Object.assign({}, shop);
-        productOffer.account = Object.assign({}, account);
-        productOffer.shippingMethod = Object.assign({}, shippingMethod);
-        delete productOffer.product_id;
-        delete productOffer.shop_id;
-        delete productOffer.account_id;
-        delete productOffer.shipping_method_id;
-        return productOffer;
-      });
-  },
+
   async getProductShippingMethod(id) {
     return await knex("shipping_method")
       .where("id", id)
