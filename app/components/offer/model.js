@@ -29,7 +29,7 @@ const offerModel = {
         offer.product = Object.assign({}, product);
         offer.shop = Object.assign({}, shop);
         offer.account = Object.assign({}, account);
-        offer.shippingMethod = Object.assign({}, shippingMethod);
+        offer.shipping_method = Object.assign({}, shippingMethod);
         delete offer.product_id;
         delete offer.shop_id;
         delete offer.account_id;
@@ -100,7 +100,7 @@ const offerModel = {
       })
     );
   },
-  async getKeywordDetails(id) {
+  async getOfferKeywordDetails(id) {
     return await knex("keyword")
       .where("id", id)
       .then((result) => result[0]);
@@ -111,7 +111,7 @@ const offerModel = {
       .then((result) => result);
     return await Promise.all(
       productKeywordsDetails.map(async (keyword) => {
-        return await offerModel.getKeywordDetails(keyword.keyword_id);
+        return await offerModel.getOfferKeywordDetails(keyword.keyword_id);
       })
     );
   },
@@ -171,7 +171,7 @@ const offerModel = {
       .then((result) => result);
     return await Promise.all(
       productShippingMethodsDetails.map(async (method) => {
-        return await offerModel.getShippingMethodDetails(
+        return await offerModel.getOfferProductShippingMethod(
           method.shipping_method_id
         );
       })
