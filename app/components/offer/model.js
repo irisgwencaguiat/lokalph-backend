@@ -177,15 +177,21 @@ const offerModel = {
       })
     );
   },
-  async getShopOffers(shopId, dateFrom, dateTo) {
+  async getShopOffers({ shop_id, date_from, date_to, page, perPage }) {
     return await knex("offer")
-      .where("shop_id", shopId)
-      .andWhereBetween("created_at", [dateFrom, dateTo])
+      .where("shop_id", shop_id)
+      .andWhere("created_at", ">=", date_from)
+      .andWhere("created_at", "<=", date_to)
       .orderBy("created_at", "desc")
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
       .then(async (result) => {
-        if (result.length < 1) return [];
+        console.log(result);
+        if (result.data.length < 1) return [];
         return await Promise.all(
-          result.map(async (data) => {
+          result.data.map(async (data) => {
             const offer = data;
             const product = await offerModel.getOfferProductDetails(
               offer.product_id

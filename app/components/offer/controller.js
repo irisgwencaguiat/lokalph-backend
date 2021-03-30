@@ -52,13 +52,16 @@ const offerController = {
   },
   async getShopOffers(request, response) {
     try {
-      const shopId = parseInt(request.params.shop_id);
-      const { date_from, date_to } = request.params;
-      const shopOffers = await offerModel.getShopOffers(
-        shopId,
+      const { shop_id, date_from, date_to } = request.params;
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const shopOffers = await offerModel.getShopOffers({
+        shop_id: parseInt(shop_id),
         date_from,
-        date_to
-      );
+        date_to,
+        page,
+        perPage,
+      });
 
       response.status(200).json(
         httpResource({
