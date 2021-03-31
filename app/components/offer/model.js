@@ -25,7 +25,8 @@ const offerModel = {
         const shippingMethod = await offerModel.getOfferProductShippingMethod(
           offer.shipping_method_id
         );
-
+        offer.cancelled_by =
+          (await offerModel.getOfferAccountDetails(offer.cancelled_by)) || null;
         offer.product = Object.assign({}, product);
         offer.shop = Object.assign({}, shop);
         offer.account = Object.assign({}, account);
@@ -241,6 +242,13 @@ const offerModel = {
       .andWhere("created_at", ">=", `${date_from}:00:00:00`)
       .andWhere("created_at", "<=", `${date_to}:23:59:59`)
       .then((result) => result[0].count);
+  },
+  async cancelOffer({ offer_id, user_id }) {
+    return await knex("offer")
+      .where("id", offer_id)
+      .update({ status: "cancelled", cancelled_by: user_id })
+      .returning(["id"])
+      .then((result) => result[0]);
   },
 };
 
