@@ -213,6 +213,9 @@ const offerModel = {
             const shippingMethod = await offerModel.getOfferProductShippingMethod(
               offer.shipping_method_id
             );
+            offer.cancelled_by =
+              (await offerModel.getOfferAccountDetails(offer.cancelled_by)) ||
+              null;
             offer.product = Object.assign({}, product);
             offer.shop = Object.assign({}, shop);
             offer.account = Object.assign({}, account);
