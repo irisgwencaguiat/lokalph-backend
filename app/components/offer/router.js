@@ -21,4 +21,13 @@ router.get(
   offerController.getShopOffers
 );
 
+router.put(
+  "/cancel",
+  [
+    middleware.authentication.passportAuthenticate,
+    middleware.authentication.grantAccess(["customer", "seller", "admin"]),
+  ],
+  offerController.cancelOffer
+);
+
 module.exports = router;

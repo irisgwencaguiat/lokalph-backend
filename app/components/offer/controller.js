@@ -81,6 +81,37 @@ const offerController = {
       );
     }
   },
+  async cancelOffer(request, response) {
+    try {
+      const { offer_id } = request.body;
+      const { id } = request.user;
+      if (!offer_id) throw "Offer Id field is empty.";
+
+      const updatedOffer = await offerModel.cancelOffer({
+        offer_id,
+        user_id: id,
+      });
+      const offerDetails = await offerModel.getOfferDetailsById(
+        updatedOffer.id
+      );
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: offerDetails,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = offerController;
