@@ -11,6 +11,13 @@ const addressModel = {
         return result[0];
       });
   },
+  async getAddressDetails(id) {
+    return await knex("address")
+      .where("id", id)
+      .then(async (result) => {
+        return result[0];
+      });
+  },
 };
 
 module.exports = addressModel;
