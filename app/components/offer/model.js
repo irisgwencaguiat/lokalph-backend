@@ -253,6 +253,13 @@ const offerModel = {
       .returning(["id"])
       .then((result) => result[0]);
   },
+  async acceptOffer(offerId) {
+    return await knex("offer")
+      .where("id", offerId)
+      .update("status", "accepted")
+      .returning(["id"])
+      .then((result) => result[0]);
+  },
 };
 
 module.exports = offerModel;

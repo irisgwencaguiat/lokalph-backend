@@ -145,6 +145,7 @@ const productModel = {
     return await knex(productModel.tableName)
       .where("id", id)
       .then(async (result) => {
+        if (result.length < 1) return null;
         const product = result[0];
         const productCategory = await productModel.getProductCategoryDetails(
           product.product_category_id
@@ -478,6 +479,13 @@ const productModel = {
   async getProductShippingMethod(id) {
     return await knex("shipping_method")
       .where("id", id)
+      .then((result) => result[0]);
+  },
+  async updateProductDetails(id, input) {
+    return await knex("product")
+      .where("id", id)
+      .update({ ...input })
+      .returning(["id"])
       .then((result) => result[0]);
   },
 };

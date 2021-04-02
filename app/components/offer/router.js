@@ -29,5 +29,13 @@ router.put(
   ],
   offerController.cancelOffer
 );
+router.put(
+  "/accept",
+  [
+    middleware.authentication.passportAuthenticate,
+    middleware.authentication.grantAccess(["seller"]),
+  ],
+  offerController.acceptOffer
+);
 
 module.exports = router;
