@@ -4,6 +4,7 @@ const productModel = require("../product/model");
 const addressModel = require("../address/model");
 const shopModel = require("../shop/model");
 const accountModel = require("../account/model");
+const utilityController = require("../utility/controller");
 const httpResource = require("../../http_resource");
 
 const offerController = {
@@ -120,10 +121,16 @@ const offerController = {
   async acceptOffer(request, response) {
     try {
       const { offer_id, date, time, address } = request.body;
+      let code = utilityController.generateRandomCode();
       if (!offer_id) throw "Offer id field is empty.";
       if (!address) throw "Address fields are empty.";
       const offer = await offerModel.getOfferDetailsById(offer_id);
       const product = await productModel.getProductDetails(offer.product.id);
+      console.log(offer.shop.id);
+      while (await transactionModel.doesCodeInShopExist(offer.shop.id, code)) {
+        code = utilityController.generateRandomCode();
+      }
+
       const newStock = product.stock - offer.quantity;
       await productModel.updateProductDetails(product.id, { stock: newStock });
       await offerModel.acceptOffer(offer_id);
@@ -134,6 +141,9 @@ const offerController = {
         date,
         time,
         address_id: addressDetails.id,
+        shop_id: offer.shop.id,
+        account_id: offer.account.id,
+        code,
       });
       const transactionDetails = await transactionModel.getTransactionDetailsById(
         createdTransaction.id
@@ -146,12 +156,22 @@ const offerController = {
         transactionDetails.address_id
       );
 
+      const transactionShopDetails = await shopModel.getShopDetails(
+        transactionDetails.shop_id
+      );
+
+      const transactionAccountDetails = await accountModel.getDetails(
+        transactionDetails.account_id
+      );
+
       transactionDetails.offer = Object.assign({}, transactionOfferDetails);
       transactionDetails.address = Object.assign({}, transactionAddressDetails);
-
+      transactionDetails.shop = Object.assign({}, transactionShopDetails);
+      transactionDetails.account = Object.assign({}, transactionAccountDetails);
       delete transactionDetails.offer_id;
       delete transactionDetails.address_id;
-
+      delete transactionDetails.shop_id;
+      delete transactionDetails.account_id;
       response.status(200).json(
         httpResource({
           success: true,

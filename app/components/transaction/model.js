@@ -15,6 +15,14 @@ const transactionModel = {
       .where("id", id)
       .then((result) => result[0]);
   },
+  async doesCodeInShopExist(shopId, code) {
+    return await knex("transaction")
+      .where("shop_id", shopId)
+      .andWhere("code", code)
+      .then((result) => {
+        return result.length > 0;
+      });
+  },
 };
 
 module.exports = transactionModel;
