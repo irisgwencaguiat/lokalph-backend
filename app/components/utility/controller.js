@@ -26,6 +26,9 @@ const utilityController = {
       strict: true,
     });
   },
+  generateRandomCode() {
+    return Math.random().toString(20).substr(2, 5);
+  },
 };
 
 module.exports = utilityController;

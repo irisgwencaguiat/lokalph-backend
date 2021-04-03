@@ -3,6 +3,8 @@ exports.up = function (knex) {
     table.increments();
     table.date("date");
     table.time("time");
+    table.integer("account_id").references("id").inTable("account");
+    table.integer("shop_id").references("id").inTable("shop");
     table.integer("address_id").references("id").inTable("address");
     table.integer("offer_id").references("id").inTable("offer");
     table.boolean("is_cancelled").defaultTo(false);
