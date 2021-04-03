@@ -23,6 +23,16 @@ const transactionModel = {
         return result.length > 0;
       });
   },
+  async getShopTransactions({ shopId, page, perPage }) {
+    return await knex("transaction")
+      .where("shop_id", shopId)
+      .orderBy("created_at", "desc")
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then((result) => result.data);
+  },
 };
 
 module.exports = transactionModel;
