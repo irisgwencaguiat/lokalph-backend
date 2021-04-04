@@ -198,6 +198,35 @@ const offerController = {
       );
     }
   },
+  async getAccountOffers(request, response) {
+    try {
+      const { account_id } = request.params;
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const accountOffers = await offerModel.getAccountOffers({
+        account_id: parseInt(account_id),
+        page,
+        perPage,
+      });
+
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: accountOffers,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = offerController;

@@ -20,6 +20,14 @@ router.get(
   ],
   offerController.getShopOffers
 );
+router.get(
+  "/account/:account_id",
+  [
+    middleware.authentication.passportAuthenticate,
+    middleware.authentication.grantAccess(["customer", "seller"]),
+  ],
+  offerController.getAccountOffers
+);
 
 router.put(
   "/cancel",

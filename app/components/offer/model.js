@@ -260,6 +260,56 @@ const offerModel = {
       .returning(["id"])
       .then((result) => result[0]);
   },
+  async getAccountOffers({ account_id, page, perPage }) {
+    const accountOffers = await knex("offer")
+      .where("account_id", account_id)
+      .orderBy("created_at", "desc")
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then(async (result) => {
+        if (result.data.length < 1) return [];
+        return await Promise.all(
+          result.data.map(async (data) => {
+            const offer = data;
+            const product = await offerModel.getOfferProductDetails(
+              offer.product_id
+            );
+            const shop = await offerModel.getOfferShopDetails(offer.shop_id);
+            const account = await offerModel.getOfferAccountDetails(
+              offer.account_id
+            );
+            const shippingMethod = await offerModel.getOfferProductShippingMethod(
+              offer.shipping_method_id
+            );
+            offer.cancelled_by =
+              (await offerModel.getOfferAccountDetails(offer.cancelled_by)) ||
+              null;
+            offer.product = Object.assign({}, product);
+            offer.shop = Object.assign({}, shop);
+            offer.account = Object.assign({}, account);
+            offer.shipping_method = Object.assign({}, shippingMethod);
+            delete offer.product_id;
+            delete offer.shop_id;
+            delete offer.account_id;
+            delete offer.shipping_method_id;
+            return offer;
+          })
+        );
+      });
+    const totalCount = await offerModel.getAccountOffersTotalCount(account_id);
+    return {
+      account_offers: accountOffers,
+      total_count: totalCount,
+    };
+  },
+  async getAccountOffersTotalCount(accountId) {
+    return await knex("offer")
+      .count("id")
+      .where("account_id", accountId)
+      .then((result) => result[0].count);
+  },
 };
 
 module.exports = offerModel;
