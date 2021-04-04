@@ -7,10 +7,10 @@ exports.up = function (knex) {
     table.integer("shop_id").references("id").inTable("shop");
     table.integer("address_id").references("id").inTable("address");
     table.integer("offer_id").references("id").inTable("offer");
-    table.boolean("is_cancelled").defaultTo(false);
+    table.integer("product_id").references("id").inTable("product");
     table.integer("cancelled_by").references("id").inTable("account");
-    table.boolean("is_received").defaultTo(false);
-    table.timestamp("received_at");
+    table.integer("received_by").references("id").inTable("account");
+    table.string("status").defaultTo("pending");
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.string("code");
   });

@@ -17,6 +17,9 @@ const transactionController = {
         page,
         perPage,
       });
+      const totalCount = await transactionModel.getShopTransactionsCount(
+        shopId
+      );
       const shopTransactionsDetails = await Promise.all(
         shopTransactions.map(async (data) => {
           const shopTransaction = data;
@@ -30,12 +33,17 @@ const transactionController = {
           const address = await addressModel.getAddressDetails(
             shopTransaction.address_id
           );
-          let cancelledBy;
-          if (shopTransaction.isCancelled) {
-            cancelledBy = await accountModel.getDetails(
+          if (shopTransaction.status === "cancelled") {
+            const cancelledBy = await accountModel.getDetails(
               shopTransaction.cancelled_by
             );
             shopTransaction.cancelled_by = Object.assign({}, cancelledBy);
+          }
+          if (shopTransaction.status === "received") {
+            const receivedBy = await accountModel.getDetails(
+              shopTransaction.received_by
+            );
+            shopTransaction.received_by = Object.assign({}, receivedBy);
           }
 
           shopTransaction.account = Object.assign({}, account);
@@ -56,7 +64,10 @@ const transactionController = {
           success: true,
           code: 200,
           message: "Successfully got records.",
-          data: shopTransactionsDetails,
+          data: {
+            shop_transactions: shopTransactionsDetails,
+            total_count: totalCount,
+          },
         })
       );
     } catch (error) {

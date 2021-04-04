@@ -126,7 +126,6 @@ const offerController = {
       if (!address) throw "Address fields are empty.";
       const offer = await offerModel.getOfferDetailsById(offer_id);
       const product = await productModel.getProductDetails(offer.product.id);
-      console.log(offer.shop.id);
       while (await transactionModel.doesCodeInShopExist(offer.shop.id, code)) {
         code = utilityController.generateRandomCode();
       }
@@ -143,6 +142,7 @@ const offerController = {
         address_id: addressDetails.id,
         shop_id: offer.shop.id,
         account_id: offer.account.id,
+        product_id: offer.product.id,
         code,
       });
       const transactionDetails = await transactionModel.getTransactionDetailsById(
@@ -164,14 +164,22 @@ const offerController = {
         transactionDetails.account_id
       );
 
+      const transactionProductDetails = await productModel.getProductDetails(
+        transactionDetails.product_id
+      );
+
       transactionDetails.offer = Object.assign({}, transactionOfferDetails);
       transactionDetails.address = Object.assign({}, transactionAddressDetails);
       transactionDetails.shop = Object.assign({}, transactionShopDetails);
       transactionDetails.account = Object.assign({}, transactionAccountDetails);
+      transactionDetails.product = Object.assign({}, transactionProductDetails);
+
       delete transactionDetails.offer_id;
       delete transactionDetails.address_id;
       delete transactionDetails.shop_id;
       delete transactionDetails.account_id;
+      delete transactionDetails.product_id;
+
       response.status(200).json(
         httpResource({
           success: true,
