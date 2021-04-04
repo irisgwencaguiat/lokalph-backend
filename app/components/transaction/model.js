@@ -33,6 +33,12 @@ const transactionModel = {
       })
       .then((result) => result.data);
   },
+  async getShopTransactionsCount(shopId) {
+    return await knex("transaction")
+      .count("id")
+      .where("shop_id", shopId)
+      .then((result) => result[0].count);
+  },
 };
 
 module.exports = transactionModel;
