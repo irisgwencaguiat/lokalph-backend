@@ -33,6 +33,9 @@ const transactionController = {
           const address = await addressModel.getAddressDetails(
             shopTransaction.address_id
           );
+          const product = await productModel.getProductDetails(
+            shopTransaction.product_id
+          );
           if (shopTransaction.status === "cancelled") {
             const cancelledBy = await accountModel.getDetails(
               shopTransaction.cancelled_by
@@ -50,11 +53,13 @@ const transactionController = {
           shopTransaction.shop = Object.assign({}, shop);
           shopTransaction.offer = Object.assign({}, offer);
           shopTransaction.address = Object.assign({}, address);
+          shopTransaction.product = Object.assign({}, product);
 
           delete shopTransaction.account_id;
           delete shopTransaction.shop_id;
           delete shopTransaction.offer_id;
           delete shopTransaction.address_id;
+          delete shopTransaction.product_id;
 
           return shopTransaction;
         })
