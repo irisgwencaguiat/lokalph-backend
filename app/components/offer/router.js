@@ -21,7 +21,7 @@ router.get(
   offerController.getShopOffers
 );
 router.get(
-  "/account/:account_id",
+  "/account",
   [
     middleware.authentication.passportAuthenticate,
     middleware.authentication.grantAccess(["customer", "seller"]),

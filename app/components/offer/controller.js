@@ -200,11 +200,11 @@ const offerController = {
   },
   async getAccountOffers(request, response) {
     try {
-      const { account_id } = request.params;
+      const { id } = request.user;
       const page = parseInt(request.query.page) || 1;
       const perPage = parseInt(request.query.per_page) || 5;
       const accountOffers = await offerModel.getAccountOffers({
-        account_id: parseInt(account_id),
+        account_id: parseInt(id),
         page,
         perPage,
       });
