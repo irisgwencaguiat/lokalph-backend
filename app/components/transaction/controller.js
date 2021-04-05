@@ -97,7 +97,8 @@ const transactionController = {
           perPage,
         }
       );
-      const accountTransactionDetails = await Promise.all(
+
+      const accountTransactionsDetails = await Promise.all(
         accountTransactions.map(async (data) => {
           const accountTransaction = data;
           const account = await accountModel.getDetails(
@@ -153,7 +154,7 @@ const transactionController = {
           code: 200,
           message: "Successfully got records.",
           data: {
-            account_transactions: accountTransactionDetails,
+            account_transactions: accountTransactionsDetails,
             total_count: totalCount,
           },
         })

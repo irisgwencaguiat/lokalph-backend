@@ -31,7 +31,10 @@ const transactionModel = {
         perPage,
         currentPage: page,
       })
-      .then((result) => result.data);
+      .then((result) => {
+        if (result.data.length < 1) return [];
+        return result.data;
+      });
   },
   async getShopTransactionsCount(shopId) {
     return await knex("transaction")
@@ -49,7 +52,7 @@ const transactionModel = {
       })
       .then(async (result) => {
         if (result.data.length < 1) return [];
-        return result;
+        return result.data;
       });
   },
   async getAccountTransactionsTotalCount(accountId) {
