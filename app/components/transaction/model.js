@@ -39,6 +39,25 @@ const transactionModel = {
       .where("shop_id", shopId)
       .then((result) => result[0].count);
   },
+  async getAccountTransactions({ account_id, page, perPage }) {
+    return await knex("transaction")
+      .where("account_id", account_id)
+      .orderBy("created_at", "desc")
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then(async (result) => {
+        if (result.data.length < 1) return [];
+        return result;
+      });
+  },
+  async getAccountTransactionsTotalCount(accountId) {
+    return await knex("transaction")
+      .count("id")
+      .where("account_id", accountId)
+      .then((result) => result[0].count);
+  },
 };
 
 module.exports = transactionModel;

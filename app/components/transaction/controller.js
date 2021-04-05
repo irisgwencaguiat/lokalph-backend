@@ -85,6 +85,89 @@ const transactionController = {
       );
     }
   },
+  async getAccountTransactions(request, response) {
+    try {
+      const { id } = request.user;
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const accountTransactions = await transactionModel.getAccountTransactions(
+        {
+          account_id: parseInt(id),
+          page,
+          perPage,
+        }
+      );
+      const accountTransactionDetails = await Promise.all(
+        accountTransactions.map(async (data) => {
+          const accountTransaction = data;
+          const account = await accountModel.getDetails(
+            accountTransaction.account_id
+          );
+          const shop = await shopModel.getShopDetails(
+            accountTransaction.shop_id
+          );
+          const offer = await offerModel.getOfferDetailsById(
+            accountTransaction.offer_id
+          );
+          const address = await addressModel.getAddressDetails(
+            accountTransaction.address_id
+          );
+          const product = await productModel.getProductDetails(
+            accountTransaction.product_id
+          );
+          if (accountTransaction.status === "cancelled") {
+            const cancelledBy = await accountModel.getDetails(
+              accountTransaction.cancelled_by
+            );
+            accountTransaction.cancelled_by = Object.assign({}, cancelledBy);
+          }
+          if (accountTransaction.status === "received") {
+            const receivedBy = await accountModel.getDetails(
+              accountTransaction.received_by
+            );
+            accountTransaction.received_by = Object.assign({}, receivedBy);
+          }
+
+          accountTransaction.account = Object.assign({}, account);
+          accountTransaction.shop = Object.assign({}, shop);
+          accountTransaction.offer = Object.assign({}, offer);
+          accountTransaction.address = Object.assign({}, address);
+          accountTransaction.product = Object.assign({}, product);
+
+          delete accountTransaction.account_id;
+          delete accountTransaction.shop_id;
+          delete accountTransaction.offer_id;
+          delete accountTransaction.address_id;
+          delete accountTransaction.product_id;
+
+          return accountTransaction;
+        })
+      );
+      const totalCount = await transactionModel.getAccountTransactionsTotalCount(
+        id
+      );
+
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: {
+            account_transactions: accountTransactionDetails,
+            total_count: totalCount,
+          },
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = transactionController;

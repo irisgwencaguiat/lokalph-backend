@@ -12,4 +12,13 @@ router.get(
   transactionController.getShopTransactions
 );
 
+router.get(
+  "/account",
+  [
+    middleware.authentication.passportAuthenticate,
+    middleware.authentication.grantAccess(["customer", "seller"]),
+  ],
+  transactionController.getAccountTransactions
+);
+
 module.exports = router;
