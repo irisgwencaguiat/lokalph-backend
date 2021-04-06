@@ -7,11 +7,8 @@ exports.up = function (knex) {
     table.decimal("total_price", 14, 2);
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.timestamp("updated_at").defaultTo(knex.fn.now());
-    table
-      .integer("cancelled_by")
-      .references("id")
-      .inTable("account")
-      .defaultTo(null);
+    table.string("cancelled_by");
+
     table.integer("shop_id").references("id").inTable("shop");
     table.integer("product_id").references("id").inTable("product");
     table.integer("account_id").references("id").inTable("account");

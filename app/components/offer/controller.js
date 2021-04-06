@@ -89,13 +89,13 @@ const offerController = {
   },
   async cancelOffer(request, response) {
     try {
-      const { offer_id } = request.body;
+      const { offer_id, cancelled_by } = request.body;
       const { id } = request.user;
       if (!offer_id) throw "Offer Id field is empty.";
 
       const updatedOffer = await offerModel.cancelOffer({
         offer_id,
-        user_id: id,
+        cancelled_by,
       });
       const offerDetails = await offerModel.getOfferDetailsById(
         updatedOffer.id
