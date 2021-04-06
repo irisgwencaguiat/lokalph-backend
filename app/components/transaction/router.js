@@ -21,4 +21,13 @@ router.get(
   transactionController.getAccountTransactions
 );
 
+router.put(
+  "/cancel",
+  [
+    middleware.authentication.passportAuthenticate,
+    middleware.authentication.grantAccess(["customer", "seller"]),
+  ],
+  transactionController.cancelTransaction
+);
+
 module.exports = router;

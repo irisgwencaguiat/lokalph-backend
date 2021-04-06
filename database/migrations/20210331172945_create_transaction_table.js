@@ -8,7 +8,7 @@ exports.up = function (knex) {
     table.integer("address_id").references("id").inTable("address");
     table.integer("offer_id").references("id").inTable("offer");
     table.integer("product_id").references("id").inTable("product");
-    table.integer("cancelled_by").references("id").inTable("account");
+    table.string("cancelled_by");
     table.integer("received_by").references("id").inTable("account");
     table.string("status").defaultTo("pending");
     table.timestamp("created_at").defaultTo(knex.fn.now());

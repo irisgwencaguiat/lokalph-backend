@@ -61,6 +61,13 @@ const transactionModel = {
       .where("account_id", accountId)
       .then((result) => result[0].count);
   },
+  async cancelTransaction(id, cancelled_by) {
+    return await knex("transaction")
+      .where("id", id)
+      .update({ status: "cancelled", cancelled_by })
+      .returning(["id"])
+      .then((result) => result[0]);
+  },
 };
 
 module.exports = transactionModel;

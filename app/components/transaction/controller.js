@@ -169,6 +169,35 @@ const transactionController = {
       );
     }
   },
+  async cancelTransaction(request, response) {
+    try {
+      const { transaction_id, cancelled_by } = request.body;
+      const cancelledTransaction = await transactionModel.cancelTransaction(
+        transaction_id,
+        cancelled_by
+      );
+      const transactionDetail = await transactionModel.getTransactionDetailsById(
+        cancelledTransaction.id
+      );
+
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: transactionDetail,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = transactionController;
