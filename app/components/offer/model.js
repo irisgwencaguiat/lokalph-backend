@@ -246,10 +246,10 @@ const offerModel = {
       .andWhere("created_at", "<=", `${date_to}:23:59:59`)
       .then((result) => result[0].count);
   },
-  async cancelOffer({ offer_id, user_id }) {
+  async cancelOffer({ offer_id, cancelled_by }) {
     return await knex("offer")
       .where("id", offer_id)
-      .update({ status: "cancelled", cancelled_by: user_id })
+      .update({ status: "cancelled", cancelled_by })
       .returning(["id"])
       .then((result) => result[0]);
   },
