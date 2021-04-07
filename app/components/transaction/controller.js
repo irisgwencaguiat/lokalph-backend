@@ -36,12 +36,7 @@ const transactionController = {
           const product = await productModel.getProductDetails(
             shopTransaction.product_id
           );
-          if (shopTransaction.status === "cancelled") {
-            const cancelledBy = await accountModel.getDetails(
-              shopTransaction.cancelled_by
-            );
-            shopTransaction.cancelled_by = Object.assign({}, cancelledBy);
-          }
+
           if (shopTransaction.status === "received") {
             const receivedBy = await accountModel.getDetails(
               shopTransaction.received_by
@@ -116,12 +111,7 @@ const transactionController = {
           const product = await productModel.getProductDetails(
             accountTransaction.product_id
           );
-          if (accountTransaction.status === "cancelled") {
-            const cancelledBy = await accountModel.getDetails(
-              accountTransaction.cancelled_by
-            );
-            accountTransaction.cancelled_by = Object.assign({}, cancelledBy);
-          }
+
           if (accountTransaction.status === "received") {
             const receivedBy = await accountModel.getDetails(
               accountTransaction.received_by
