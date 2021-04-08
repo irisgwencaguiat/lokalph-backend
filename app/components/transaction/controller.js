@@ -130,6 +130,7 @@ const transactionController = {
           delete accountTransaction.offer_id;
           delete accountTransaction.address_id;
           delete accountTransaction.product_id;
+          delete accountTransaction.code;
 
           return accountTransaction;
         })
@@ -169,13 +170,89 @@ const transactionController = {
       const transactionDetail = await transactionModel.getTransactionDetailsById(
         cancelledTransaction.id
       );
-
+      const product = await productModel.getProductDetails(
+        transactionDetail.product_id
+      );
+      const offer = await offerModel.getOfferDetailsById(
+        transactionDetail.offer_id
+      );
+      const newStock = product.stock + offer.quantity;
+      await productModel.updateProductDetails(product.id, { stock: newStock });
       response.status(200).json(
         httpResource({
           success: true,
           code: 200,
           message: "Successfully got records.",
           data: transactionDetail,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
+  async receiveTransaction(request, response) {
+    try {
+      const accountId = parseInt(request.user.id);
+      const { transaction_id, code } = request.body;
+      const doesTransactionCodeMatch = await transactionModel.doesTransactionCodeMatch(
+        transaction_id,
+        code
+      );
+      if (!doesTransactionCodeMatch) throw "Transaction code does not match.";
+      const receivedTransaction = await transactionModel.receiveTransaction(
+        transaction_id,
+        accountId
+      );
+
+      const transactionDetails = await transactionModel.getTransactionDetailsById(
+        receivedTransaction.id
+      );
+
+      const account = await accountModel.getDetails(
+        transactionDetails.account_id
+      );
+      const shop = await shopModel.getShopDetails(transactionDetails.shop_id);
+      const offer = await offerModel.getOfferDetailsById(
+        transactionDetails.offer_id
+      );
+      const address = await addressModel.getAddressDetails(
+        transactionDetails.address_id
+      );
+      const product = await productModel.getProductDetails(
+        transactionDetails.product_id
+      );
+
+      if (transactionDetails.status === "received") {
+        const receivedBy = await accountModel.getDetails(
+          transactionDetails.received_by
+        );
+        transactionDetails.received_by = Object.assign({}, receivedBy);
+      }
+
+      transactionDetails.account = Object.assign({}, account);
+      transactionDetails.shop = Object.assign({}, shop);
+      transactionDetails.offer = Object.assign({}, offer);
+      transactionDetails.address = Object.assign({}, address);
+      transactionDetails.product = Object.assign({}, product);
+
+      delete transactionDetails.account_id;
+      delete transactionDetails.shop_id;
+      delete transactionDetails.offer_id;
+      delete transactionDetails.address_id;
+      delete transactionDetails.product_id;
+
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: transactionDetails,
         })
       );
     } catch (error) {

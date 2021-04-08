@@ -11,7 +11,6 @@ router.get(
   ],
   transactionController.getShopTransactions
 );
-
 router.get(
   "/account",
   [
@@ -19,6 +18,15 @@ router.get(
     middleware.authentication.grantAccess(["customer", "seller"]),
   ],
   transactionController.getAccountTransactions
+);
+
+router.put(
+  "/receive",
+  [
+    middleware.authentication.passportAuthenticate,
+    middleware.authentication.grantAccess(["customer", "seller"]),
+  ],
+  transactionController.receiveTransaction
 );
 
 router.put(

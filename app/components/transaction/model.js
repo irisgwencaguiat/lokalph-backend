@@ -68,6 +68,21 @@ const transactionModel = {
       .returning(["id"])
       .then((result) => result[0]);
   },
+  async doesTransactionCodeMatch(id, code) {
+    return await knex("transaction")
+      .where("id", id)
+      .andWhere("code", code)
+      .then((result) => {
+        return result.length === 1;
+      });
+  },
+  async receiveTransaction(id, received_by) {
+    return await knex("transaction")
+      .where("id", id)
+      .update({ status: "received", received_by })
+      .returning(["id"])
+      .then((result) => result[0]);
+  },
 };
 
 module.exports = transactionModel;
