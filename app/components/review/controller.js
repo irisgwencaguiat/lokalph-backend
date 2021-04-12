@@ -114,6 +114,71 @@ const reviewController = {
       );
     }
   },
+  async getProductReviews(request, response) {
+    try {
+      const productId = parseInt(request.params.product_id);
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const search = parseInt(request.query.search) || null;
+      const payload = {
+        productId,
+        page,
+        perPage,
+        search,
+      };
+      let productReviews = [];
+      if (search)
+        productReviews = await reviewModel.searchProductReviews(payload);
+      if (!search)
+        productReviews = await reviewModel.getProductReviews(payload);
+
+      const productReviewsDetails = await Promise.all(
+        productReviews.data.map(async (data) => {
+          const productReviewDetails = data;
+          const productReviewProduct = await productModel.getProductDetails(
+            productReviewDetails.product_id
+          );
+          const productReviewAccount = await accountModel.getDetails(
+            productReviewDetails.account_id
+          );
+          const productReviewImages = await reviewModel.getProductReviewImage(
+            productReviewDetails.id
+          );
+          productReviewDetails.product = Object.assign(
+            {},
+            productReviewProduct
+          );
+          productReviewDetails.account = Object.assign(
+            {},
+            productReviewAccount
+          );
+          productReviewDetails.images = Object.assign([], productReviewImages);
+          delete productReviewDetails.product_id;
+          delete productReviewDetails.account_id;
+          return productReviewDetails;
+        })
+      );
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: {
+            product_review: productReviewsDetails,
+            total_count: parseInt(productReviews.pagination.total),
+          },
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = reviewController;
