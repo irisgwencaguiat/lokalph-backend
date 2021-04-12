@@ -13,6 +13,7 @@ exports.up = function (knex) {
     table.string("status").defaultTo("pending");
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.string("code");
+    table.boolean("is_reviewed").defaultTo(false);
   });
 };
 
