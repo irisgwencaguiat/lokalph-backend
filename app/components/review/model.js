@@ -44,6 +44,33 @@ const reviewModel = {
       .where("id", id)
       .then((result) => result[0]);
   },
+  async searchProductReviews({ productId, page, perPage, search }) {
+    return await knex("product_review")
+      .where("product_id", productId)
+      .andWhere("rating", search)
+      .orderBy("created_at", "desc")
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then((result) => result);
+  },
+  async getProductReviews({ productId, page, perPage }) {
+    return await knex("product_review")
+      .where("product_id", productId)
+      .orderBy("created_at", "desc")
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then((result) => result);
+  },
+  async getProductReviewsTotalCount(productId) {
+    return await knex("product_review")
+      .count("id")
+      .where("product_id", productId)
+      .then((result) => parseInt(result[0].count));
+  },
 };
 
 module.exports = reviewModel;
