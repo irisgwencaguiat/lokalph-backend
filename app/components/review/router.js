@@ -14,5 +14,5 @@ router.post(
 );
 
 router.get("/product/:product_id", reviewController.getProductReviews);
-
+router.get("/shop/:shop_id", reviewController.getShopReviews);
 module.exports = router;
