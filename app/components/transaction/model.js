@@ -83,6 +83,13 @@ const transactionModel = {
       .returning(["id"])
       .then((result) => result[0]);
   },
+  async transactionIsReviewed(id) {
+    return await knex("transaction")
+      .where("id", id)
+      .update("is_reviewed", true)
+      .returning(["id"])
+      .then((result) => result[0]);
+  },
 };
 
 module.exports = transactionModel;
