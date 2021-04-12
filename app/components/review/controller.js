@@ -179,6 +179,55 @@ const reviewController = {
       );
     }
   },
+  async getShopReviews(request, response) {
+    try {
+      const shopId = parseInt(request.params.shop_id);
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const payload = {
+        shopId,
+        page,
+        perPage,
+      };
+      const shopReviews = await reviewModel.getShopReviews(payload);
+
+      const shopReviewsDetails = await Promise.all(
+        shopReviews.data.map(async (data) => {
+          const shopReviewDetails = data;
+          const shopReviewShop = await shopModel.getShopDetails(
+            shopReviewDetails.shop_id
+          );
+          const shopReviewAccount = await accountModel.getDetails(
+            shopReviewDetails.account_id
+          );
+          shopReviewDetails.shop = Object.assign({}, shopReviewShop);
+          shopReviewDetails.account = Object.assign({}, shopReviewAccount);
+          delete shopReviewDetails.shop_id;
+          delete shopReviewDetails.account_id;
+          return shopReviewDetails;
+        })
+      );
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: {
+            product_review: shopReviewsDetails,
+            total_count: parseInt(shopReviews.pagination.total),
+          },
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = reviewController;
