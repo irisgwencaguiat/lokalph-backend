@@ -126,6 +126,9 @@ const reviewController = {
         perPage,
         search,
       };
+      const totalCount = await reviewModel.getProductReviewsTotalCount(
+        productId
+      );
       let productReviews = [];
       if (search)
         productReviews = await reviewModel.searchProductReviews(payload);
@@ -165,7 +168,7 @@ const reviewController = {
           message: "Successfully got records.",
           data: {
             product_review: productReviewsDetails,
-            total_count: parseInt(productReviews.pagination.total),
+            total_count: parseInt(totalCount),
           },
         })
       );
@@ -190,7 +193,7 @@ const reviewController = {
         perPage,
       };
       const shopReviews = await reviewModel.getShopReviews(payload);
-
+      const totalCount = await reviewModel.getShopReviewsTotalCount(shopId);
       const shopReviewsDetails = await Promise.all(
         shopReviews.data.map(async (data) => {
           const shopReviewDetails = data;
@@ -214,7 +217,7 @@ const reviewController = {
           message: "Successfully got records.",
           data: {
             product_review: shopReviewsDetails,
-            total_count: parseInt(shopReviews.pagination.total),
+            total_count: parseInt(totalCount),
           },
         })
       );
