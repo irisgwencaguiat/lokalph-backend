@@ -65,6 +65,12 @@ const reviewModel = {
       })
       .then((result) => result);
   },
+  async getProductReviewsTotalCount(productId) {
+    return await knex("product_review")
+      .count("id")
+      .where("product_id", productId)
+      .then((result) => parseInt(result[0].count));
+  },
   async getShopReviews({ shopId, page, perPage }) {
     return await knex("shop_review")
       .where("shop_id", shopId)
@@ -74,6 +80,12 @@ const reviewModel = {
         currentPage: page,
       })
       .then((result) => result);
+  },
+  async getShopReviewsTotalCount(shopId) {
+    return await knex("shop_review")
+      .count("id")
+      .where("shop_id", shopId)
+      .then((result) => parseInt(result[0].count));
   },
 };
 
