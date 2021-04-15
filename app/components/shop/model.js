@@ -32,8 +32,23 @@ const shopModel = {
           .then(async (result) => {
             return result[0];
           });
+        const productCount = await shopModel.getShopProductsTotalCount(shop.id);
+        const orderCount = await shopModel.getShopOrdersTotalCount(shop.id);
+        const ratings = (await shopModel.getShopRatings(shop.id)) || [];
+        const ratingNumbers = await Promise.all(
+          ratings.map((data) => data.rating)
+        );
+        const ratingCount = await shopModel.getShopRatingsTotalCount(shop.id);
+        const ratingSum = await ratingNumbers.reduce((a, b) => {
+          return a + b;
+        });
+        const ratingAverage =
+          (await parseInt(ratingSum)) / parseInt(ratingCount);
         shop.account = Object.assign({}, account);
         shop.address = Object.assign({}, address);
+        shop.total_products_count = productCount;
+        shop.total_orders_count = orderCount;
+        shop.rating = ratingAverage;
         delete shop.account_id;
         delete shop.address_id;
         delete shop.account.stripe_id;
@@ -97,6 +112,30 @@ const shopModel = {
       .count("id")
       .where("account_id", accountId)
       .then((result) => parseInt(result[0].count) || null);
+  },
+  async getShopProductsTotalCount(shopId) {
+    return await knex("product")
+      .count("id")
+      .where("shop_id", shopId)
+      .then((result) => parseInt(result[0].count));
+  },
+  async getShopOrdersTotalCount(shopId) {
+    return await knex("transaction")
+      .count("id")
+      .where("shop_id", shopId)
+      .andWhere("status", "received")
+      .then((result) => parseInt(result[0].count));
+  },
+  async getShopRatings(shopId) {
+    return await knex("shop_review")
+      .where("shop_id", shopId)
+      .then((result) => result);
+  },
+  async getShopRatingsTotalCount(shopId) {
+    return await knex("shop_review")
+      .count("id")
+      .where("shop_id", shopId)
+      .then((result) => parseInt(result[0].count));
   },
 };
 

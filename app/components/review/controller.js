@@ -216,7 +216,7 @@ const reviewController = {
           code: 200,
           message: "Successfully got records.",
           data: {
-            product_review: shopReviewsDetails,
+            shop_review: shopReviewsDetails,
             total_count: parseInt(totalCount),
           },
         })
