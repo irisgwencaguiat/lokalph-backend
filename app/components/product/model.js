@@ -47,6 +47,7 @@ const productModel = {
       .returning(["id"])
       .then((result) => result[0]);
   },
+
   async getProductAccountDetails(id) {
     return (
       (await knex(`account`)
@@ -163,6 +164,8 @@ const productModel = {
         const shippingMethods = await productModel.getProductShippingMethodsDetails(
           product.id
         );
+        const views = await productModel.getProductViews(product.id);
+        const likes = await productModel.getProductLikesTotalCount(product.id);
         const shop = await productModel.getProductShopDetails(product.shop_id);
         product.shop = Object.assign({}, shop);
         product.category = Object.assign({}, productCategory);
@@ -170,6 +173,8 @@ const productModel = {
         product.images = Object.assign([], images);
         product.shipping_methods = Object.assign([], shippingMethods);
         product.keywords = Object.assign([], keywords);
+        product.views = views;
+        product.likes = likes;
         delete product.shop_id;
         delete product.product_category_id;
         delete product.product_condition_id;
@@ -259,6 +264,10 @@ const productModel = {
           product.id
         );
         const shop = await productModel.getProductShopDetails(product.shop_id);
+        const views = await productModel.getProductViews(product.id);
+        const likes = await productModel.getProductLikesTotalCount(product.id);
+        product.views = views;
+        product.likes = likes;
         product.shop = Object.assign({}, shop);
         product.category = Object.assign({}, productCategory);
         product.condition = Object.assign({}, productCondition);
@@ -402,7 +411,7 @@ const productModel = {
     return await knex("product_view")
       .count("id")
       .where("product_id", productId)
-      .then((result) => result[0].count);
+      .then((result) => parseInt(result[0].count));
   },
   async doesProductLikeExist(accountId, productId) {
     return await knex("product_like")
@@ -476,10 +485,11 @@ const productModel = {
       });
   },
 
-  async getProductShippingMethod(id) {
-    return await knex("shipping_method")
-      .where("id", id)
-      .then((result) => result[0]);
+  async getProductLikesTotalCount(productId) {
+    return await knex("product_like")
+      .count("id")
+      .where("product_id", productId)
+      .then((result) => parseInt(result[0].count));
   },
   async updateProductDetails(id, input) {
     return await knex("product")
