@@ -26,6 +26,7 @@ const chatController = {
         parseInt(product_id)
       );
       if (doesRoomExist.length > 0) {
+        await chatModel.updateRoomUpdatedTime(doesRoomExist[0].id);
         const newChat = await chatModel.createChat({
           message,
           is_sent_by,
