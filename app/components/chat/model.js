@@ -55,6 +55,13 @@ const chatModel = {
       .where("room_id", roomId)
       .then((result) => result[0]);
   },
+  async updateRoomUpdatedTime(roomId) {
+    return await knex("room")
+      .where("id", roomId)
+      .update("updated_at", knex.fn.now())
+      .returning(["id"])
+      .then((result) => result[0]);
+  },
 };
 
 module.exports = chatModel;
