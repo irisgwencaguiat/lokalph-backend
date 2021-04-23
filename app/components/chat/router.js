@@ -3,7 +3,7 @@ const router = express.Router();
 const chatController = require("./controller");
 const middleware = require("../../middleware");
 
-router.post("/", [
+router.post("/room", [
   [
     middleware.multer().single("image"),
     middleware.authentication.passportAuthenticate,
