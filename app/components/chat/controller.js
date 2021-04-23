@@ -29,7 +29,7 @@ const chatController = {
         const newChat = await chatModel.createChat({
           message,
           is_sent_by,
-          image_url: uploadedImage.url,
+          image_url: uploadedImage.url || null,
           shop_id: parseInt(shop_id) || null,
           account_id: parseInt(account_id) || null,
         });
@@ -52,7 +52,7 @@ const chatController = {
         const createdChat = await chatModel.createChat({
           message,
           is_sent_by,
-          image_url: uploadedImage.url,
+          image_url: uploadedImage.url || null,
           shop_id: parseInt(shop_id) || null,
           account_id: parseInt(account_id) || null,
         });
