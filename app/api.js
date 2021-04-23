@@ -7,6 +7,7 @@ const productRouter = require("./components/product/router");
 const offerRouter = require("./components/offer/router");
 const transactionRouter = require("./components/transaction/router");
 const reviewRouter = require("./components/review/router");
+const chatRouter = require("./components/chat/router");
 
 api.use("/authentication", authenticationRouter);
 api.use("/shop", shopRouter);
@@ -15,5 +16,5 @@ api.use("/product", productRouter);
 api.use("/offer", offerRouter);
 api.use("/transaction", transactionRouter);
 api.use("/review", reviewRouter);
-
+api.use("/chat", chatRouter);
 module.exports = api;
