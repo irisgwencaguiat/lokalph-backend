@@ -88,6 +88,11 @@ const accountModel = {
       .where("id", accountId)
       .update({ stripe_id: stripeId });
   },
+  async getDetailsByProfileId(profileId) {
+    return await knex(accountModel.tableName)
+      .where("profile_id", profileId)
+      .then((result) => result[0]);
+  },
 };
 
 module.exports = accountModel;
