@@ -142,7 +142,10 @@ const chatController = {
         if (firstNameExists.length > 0) {
           foundAccounts = await Promise.all(
             firstNameExists.map(async (data) => {
-              return await accountModel.getDetailsByProfileId(data.id);
+              const foundAccount = await accountModel.getDetailsByProfileId(
+                data.id
+              );
+              return foundAccount.id;
             })
           );
         }
@@ -185,7 +188,7 @@ const chatController = {
           code: 200,
           message: "Successfully got records.",
           data: {
-            rooms,
+            rooms: rooms,
             total_count: totalCount,
           },
         })
