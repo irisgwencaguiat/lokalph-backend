@@ -50,10 +50,37 @@ const chatModel = {
       .andWhere("product_id", productId)
       .then((result) => result || []);
   },
-  async getChatRoomByRoomId(roomId) {
-    return await knex("chat_room")
-      .where("room_id", roomId)
-      .then((result) => result[0]);
+  async getShopRooms({ shopId, page, perPage, sort }) {
+    return await knex("room")
+      .where("shop_id", shopId)
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then((result) => result.data);
+  },
+  async searchShopRooms({ shopId, page, perPage, search }) {
+    return await knex("room")
+      .whereIn("account_id", search)
+      .andWhere("shop_id", shopId)
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then((result) => result.data);
+  },
+  async getShopRoomTotalCount(shopId) {
+    return await knex("room")
+      .count("id")
+      .where("shop_id", shopId)
+      .then((result) => parseInt(result[0].count));
+  },
+  async searchRoomTotalCount(shopId, search) {
+    return await knex("room")
+      .count("id")
+      .whereIn("account_id", search)
+      .where("shop_id", shopId)
+      .then((result) => parseInt(result[0].count));
   },
   async updateRoomUpdatedTime(roomId) {
     return await knex("room")

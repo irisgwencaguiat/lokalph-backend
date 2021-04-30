@@ -2,6 +2,7 @@ const chatModel = require("./model");
 const accountModel = require("../account/model");
 const shopModel = require("../shop/model");
 const productModel = require("../product/model");
+const profileModel = require("../profile/model");
 const cloudinaryController = require("../cloudinary/controller");
 const httpResource = require("../../http_resource");
 const pusher = require("../../pusher");
@@ -104,6 +105,89 @@ const chatController = {
           code: 200,
           message: "Successfully got records.",
           data: chatRoomDetails,
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
+  async getShopRooms(request, response) {
+    try {
+      const shopId = parseInt(request.params.shop_id);
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const search = request.query.search || null;
+      const payload = {
+        shopId,
+        page,
+        perPage,
+        search,
+      };
+      let totalCount;
+      let rooms = [];
+      let foundAccounts = [];
+      const firstNameExists = await profileModel.getProfileByFirstName(search);
+      const lastNameExists = await profileModel.getProfileByLastName(search);
+      if (!search) {
+        rooms = await chatModel.getShopRooms(payload);
+        totalCount = await chatModel.getShopRoomTotalCount(payload.shopId);
+      }
+      if (search) {
+        if (firstNameExists.length > 0) {
+          foundAccounts = await Promise.all(
+            firstNameExists.map(async (data) => {
+              return await accountModel.getDetailsByProfileId(data.id);
+            })
+          );
+        }
+        if (lastNameExists.length > 0) {
+          foundAccounts = await Promise.all(
+            lastNameExists.map(async (data) => {
+              const foundAccount = await accountModel.getDetailsByProfileId(
+                data.id
+              );
+              return foundAccount.id;
+            })
+          );
+        }
+        payload.search = Object.assign([], foundAccounts);
+        rooms = await chatModel.searchShopRooms(payload);
+        totalCount = await chatModel.searchRoomTotalCount(
+          payload.shopId,
+          payload.search
+        );
+      }
+      rooms = await Promise.all(
+        rooms.map(async (data) => {
+          const room = data;
+          const shop = await shopModel.getShopDetails(room.shop_id);
+          const account = await accountModel.getDetails(room.account_id);
+          const product = await productModel.getProductDetails(room.product_id);
+          room.shop = Object.assign({}, shop);
+          room.account = Object.assign({}, account);
+          room.product = Object.assign({}, product);
+          delete room.shop_id;
+          delete room.account_id;
+          delete room.product_id;
+          return room;
+        })
+      );
+
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: {
+            rooms,
+            total_count: totalCount,
+          },
         })
       );
     } catch (error) {

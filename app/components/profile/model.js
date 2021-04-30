@@ -14,6 +14,16 @@ const profileModel = {
       .returning(["id"])
       .then((result) => result[0]);
   },
+  async getProfileByFirstName(name) {
+    return await knex(profileModel.tableName)
+      .where("first_name", "ilike", `%${name}%`)
+      .then((result) => result || []);
+  },
+  async getProfileByLastName(name) {
+    return await knex(profileModel.tableName)
+      .where("last_name", "ilike", `%${name}%`)
+      .then((result) => result || []);
+  },
 };
 
 module.exports = profileModel;
