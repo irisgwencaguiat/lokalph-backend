@@ -135,14 +135,34 @@ const shopController = {
       );
     }
   },
-  async getShopOffers(request, response) {
+  async searchShop(request, response) {
     try {
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const sort = request.query.sort || "asc";
+      const search = request.query.search || null;
+      const payload = {
+        page,
+        perPage,
+        sort,
+        search,
+      };
+      const totalCount = await shopModel.searchShopTotalCount(payload);
+      const foundShop = await shopModel.searchShop(payload);
+      const shopsDetails = await Promise.all(
+        foundShop.map(async (shop) => {
+          return await shopModel.getShopDetails(shop.id);
+        })
+      );
       response.status(200).json(
         httpResource({
           success: true,
           code: 200,
           message: "Successfully got records.",
-          data: shopDetails,
+          data: {
+            shops: shopsDetails,
+            total_count: totalCount,
+          },
         })
       );
     } catch (error) {
