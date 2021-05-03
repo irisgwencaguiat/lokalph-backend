@@ -150,10 +150,11 @@ const shopModel = {
       })
       .then((result) => result.data);
   },
-  async searchShopTotalCount({ page, perPage, sort, search }) {
+  async searchShopTotalCount({ search }) {
     return await knex("shop")
+      .count("id")
       .whereRaw("to_tsvector(name) @@ to_tsquery(?)", [search])
-      .then((result) => result.data);
+      .then((result) => parseInt(result[0].count));
   },
 };
 

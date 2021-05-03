@@ -60,6 +60,7 @@ router.get(
 );
 router.get("/views/:product_id", productController.getProductViews);
 router.get("/likes/:product_id", productController.getProductLikes);
+router.get("/search", productController.searchProduct);
 
 router.delete(
   "/like/:product_id",

@@ -498,6 +498,22 @@ const productModel = {
       .returning(["id"])
       .then((result) => result[0]);
   },
+  async searchProduct({ page, perPage, sort, search }) {
+    return await knex("product")
+      .whereRaw("to_tsvector(name) @@ to_tsquery(?)", [search])
+      .orderBy("created_at", sort)
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then((result) => result.data);
+  },
+  async searchProductTotalCount({ search }) {
+    return await knex("product")
+      .count("id")
+      .whereRaw("to_tsvector(name) @@ to_tsquery(?)", [search])
+      .then((result) => parseInt(result[0].count));
+  },
 };
 
 module.exports = productModel;

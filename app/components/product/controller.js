@@ -547,6 +547,46 @@ const productController = {
       );
     }
   },
+  async searchProduct(request, response) {
+    try {
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const sort = request.query.sort || "desc";
+      const search = request.query.search || null;
+      const payload = {
+        page,
+        perPage,
+        sort,
+        search,
+      };
+      const totalCount = await productModel.searchProductTotalCount(payload);
+      const foundProducts = await productModel.searchProduct(payload);
+      const productsDetails = await Promise.all(
+        foundProducts.map(async (product) => {
+          return await productModel.getProductDetails(product.id);
+        })
+      );
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: {
+            products: productsDetails,
+            total_count: totalCount,
+          },
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;
