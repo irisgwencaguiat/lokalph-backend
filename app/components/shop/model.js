@@ -39,16 +39,19 @@ const shopModel = {
           ratings.map((data) => data.rating)
         );
         const ratingCount = await shopModel.getShopRatingsTotalCount(shop.id);
-        const ratingSum = await ratingNumbers.reduce((a, b) => {
-          return a + b;
-        });
+        let ratingSum = 0;
+        if (ratingNumbers.length > 0) {
+          ratingSum = await ratingNumbers.reduce((a, b) => {
+            return a + b;
+          });
+        }
         const ratingAverage =
           (await parseInt(ratingSum)) / parseInt(ratingCount);
         shop.account = Object.assign({}, account);
         shop.address = Object.assign({}, address);
         shop.total_products_count = productCount;
         shop.total_orders_count = orderCount;
-        shop.rating = ratingAverage;
+        shop.rating = ratingAverage || 0;
         delete shop.account_id;
         delete shop.address_id;
         delete shop.account.stripe_id;
@@ -136,6 +139,21 @@ const shopModel = {
       .count("id")
       .where("shop_id", shopId)
       .then((result) => parseInt(result[0].count));
+  },
+  async searchShop({ page, perPage, sort, search }) {
+    return await knex("shop")
+      .whereRaw("to_tsvector(name) @@ to_tsquery(?)", [search])
+      .orderBy("created_at", sort)
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then((result) => result.data);
+  },
+  async searchShopTotalCount({ page, perPage, sort, search }) {
+    return await knex("shop")
+      .whereRaw("to_tsvector(name) @@ to_tsquery(?)", [search])
+      .then((result) => result.data);
   },
 };
 
