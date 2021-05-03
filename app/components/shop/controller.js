@@ -139,7 +139,7 @@ const shopController = {
     try {
       const page = parseInt(request.query.page) || 1;
       const perPage = parseInt(request.query.per_page) || 5;
-      const sort = request.query.sort || "asc";
+      const sort = request.query.sort || "desc";
       const search = request.query.search || null;
       const payload = {
         page,
@@ -148,9 +148,9 @@ const shopController = {
         search,
       };
       const totalCount = await shopModel.searchShopTotalCount(payload);
-      const foundShop = await shopModel.searchShop(payload);
+      const foundShops = await shopModel.searchShop(payload);
       const shopsDetails = await Promise.all(
-        foundShop.map(async (shop) => {
+        foundShops.map(async (shop) => {
           return await shopModel.getShopDetails(shop.id);
         })
       );
