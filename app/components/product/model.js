@@ -142,6 +142,17 @@ const productModel = {
       })
     );
   },
+  async getProductRatings(productId) {
+    return await knex("product_review")
+      .where("product_id", productId)
+      .then((result) => result);
+  },
+  async getProductRatingsTotalCount(productId) {
+    return await knex("product_review")
+      .count("id")
+      .where("product_id", productId)
+      .then((result) => parseInt(result[0].count));
+  },
   async getProductDetails(id) {
     return await knex(productModel.tableName)
       .where("id", id)
@@ -167,6 +178,22 @@ const productModel = {
         const views = await productModel.getProductViews(product.id);
         const likes = await productModel.getProductLikesTotalCount(product.id);
         const shop = await productModel.getProductShopDetails(product.shop_id);
+        const ratings =
+          (await productModel.getProductRatings(product.id)) || [];
+        const ratingNumbers = await Promise.all(
+          ratings.map((data) => data.rating)
+        );
+        const ratingCount = await productModel.getProductRatingsTotalCount(
+          product.id
+        );
+        let ratingSum = 0;
+        if (ratingNumbers.length > 0) {
+          ratingSum = await ratingNumbers.reduce((a, b) => {
+            return a + b;
+          });
+        }
+        const ratingAverage =
+          (await parseInt(ratingSum)) / parseInt(ratingCount);
         product.shop = Object.assign({}, shop);
         product.category = Object.assign({}, productCategory);
         product.condition = Object.assign({}, productCondition);
@@ -175,6 +202,8 @@ const productModel = {
         product.keywords = Object.assign([], keywords);
         product.views = views;
         product.likes = likes;
+        product.rating = ratingAverage || 0;
+
         delete product.shop_id;
         delete product.product_category_id;
         delete product.product_condition_id;
@@ -513,6 +542,26 @@ const productModel = {
       .count("id")
       .whereRaw("to_tsvector(name) @@ to_tsquery(?)", [search])
       .then((result) => parseInt(result[0].count));
+  },
+  async getProductCategoryByName(name) {
+    return await knex("product_category")
+      .where("name", name)
+      .then((result) => result[0]);
+  },
+  async getProductsByCategory({ id, page, perPage, sort }) {
+    return await knex("product")
+      .where("product_category_id", id)
+      .orderBy("created_at", sort)
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then((result) => result.data);
+  },
+  async getProductsByCategoryTotalCount({ id }) {
+    return await knex("product")
+      .where("product_category_id", id)
+      .then((result) => result.data);
   },
 };
 
