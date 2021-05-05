@@ -560,8 +560,9 @@ const productModel = {
   },
   async getProductsByCategoryTotalCount({ id }) {
     return await knex("product")
+      .count("id")
       .where("product_category_id", id)
-      .then((result) => result.data);
+      .then((result) => parseInt(result[0].count));
   },
 };
 
