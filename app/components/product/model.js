@@ -590,6 +590,22 @@ const productModel = {
       .where("product.stock", ">", 0)
       .then((result) => parseInt(result[0].count) || 0);
   },
+    async getNewProducts({perPage, page}) {
+      return await knex('product')
+          .where('stock', '>', 0)
+          .orderBy('created_at', 'desc')
+          .paginate({
+              perPage,
+              currentPage: page
+          })
+          .then(result => result.data || [])
+    },
+    async getNewProductsTotalCount() {
+        return await knex("product")
+            .count("product.id")
+            .where("product.stock", ">", 0)
+            .then((result) => parseInt(result[0].count) || 0);
+    },
 };
 
 module.exports = productModel;
