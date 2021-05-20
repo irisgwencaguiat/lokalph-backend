@@ -564,6 +564,32 @@ const productModel = {
       .where("product_category_id", id)
       .then((result) => parseInt(result[0].count));
   },
+  async getHotProducts({ perPage, page }) {
+    return await knex
+      .from("product")
+      .leftJoin("product_like", "product_like.product_id", "product.id")
+      .leftJoin("product_view", "product_view.product_id", "product.id")
+      .select(knex.raw("product.id as id"))
+      .groupBy("product.id")
+      .where("product.stock", ">", 0)
+      .orderBy(
+        knex.raw(
+          "coalesce(coalesce(sum(product_like.id), 0) + coalesce(sum(product_view.id), 0), 0)"
+        ),
+        "desc"
+      )
+      .paginate({
+        perPage,
+        currentPage: page,
+      })
+      .then((result) => result.data);
+  },
+  async getHotProductsTotalCount() {
+    return await knex("product")
+      .count("product.id")
+      .where("product.stock", ">", 0)
+      .then((result) => parseInt(result[0].count) || 0);
+  },
 };
 
 module.exports = productModel;

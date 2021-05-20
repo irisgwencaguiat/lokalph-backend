@@ -63,6 +63,7 @@ router.get("/likes/:product_id", productController.getProductLikes);
 router.get("/search", productController.searchProduct);
 router.get("/products/category/:name", productController.getProductsByCategory);
 router.get("/category/:name", productController.getProductCategoryByName);
+router.get("/hot", productController.getHotProducts);
 
 router.delete(
   "/like/:product_id",
