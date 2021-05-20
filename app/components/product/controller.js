@@ -667,22 +667,13 @@ const productController = {
           return await productModel.getProductDetails(product.id);
         })
       );
-      // const sortedProducts = await Promise.all(
-      //   productDetails.sort((a, b) => {
-      //     const aViewsAndLikes = a.views + a.likes;
-      //     const bViewsAndLikes = b.views + b.likes;
-      //     if (aViewsAndLikes > bViewsAndLikes) return -1;
-      //     if (aViewsAndLikes < bViewsAndLikes) return 1;
-      //     if (aViewsAndLikes === bViewsAndLikes) return 0;
-      //   })
-      // );
       response.status(200).json(
         httpResource({
           success: true,
           code: 200,
           message: "Successfully got records.",
           data: {
-            products,
+            productDetails,
             total_count: totalCount,
           },
         })
