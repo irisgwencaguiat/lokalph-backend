@@ -652,6 +652,51 @@ const productController = {
       );
     }
   },
+  async getHotProducts(request, response) {
+    try {
+      const page = parseInt(request.query.page) || 1;
+      const perPage = parseInt(request.query.per_page) || 5;
+      const payload = {
+        page,
+        perPage,
+      };
+      const totalCount = await productModel.getHotProductsTotalCount();
+      const products = await productModel.getHotProducts(payload);
+      const productDetails = await Promise.all(
+        products.map(async (product) => {
+          return await productModel.getProductDetails(product.id);
+        })
+      );
+      // const sortedProducts = await Promise.all(
+      //   productDetails.sort((a, b) => {
+      //     const aViewsAndLikes = a.views + a.likes;
+      //     const bViewsAndLikes = b.views + b.likes;
+      //     if (aViewsAndLikes > bViewsAndLikes) return -1;
+      //     if (aViewsAndLikes < bViewsAndLikes) return 1;
+      //     if (aViewsAndLikes === bViewsAndLikes) return 0;
+      //   })
+      // );
+      response.status(200).json(
+        httpResource({
+          success: true,
+          code: 200,
+          message: "Successfully got records.",
+          data: {
+            products,
+            total_count: totalCount,
+          },
+        })
+      );
+    } catch (error) {
+      response.status(400).json(
+        httpResource({
+          success: false,
+          code: 400,
+          message: error,
+        })
+      );
+    }
+  },
 };
 
 module.exports = productController;
